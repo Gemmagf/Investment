@@ -1,5 +1,7 @@
 import streamlit as st
 import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
 
 st.set_page_config(page_title="Simulador Inversió Turística a Suïssa", layout="centered")
 st.title("📊 Simulador de rendibilitat de pis turístic a Suïssa")
@@ -54,48 +56,39 @@ st.markdown(f"**Quota anual d'interès hipoteca (~1.9%):** CHF {quota_hipoteca:,
 st.markdown(f"**Benefici net (després de tot):** CHF {benefici_despres_hipoteca:,.0f}")
 st.markdown(f"**ROI sobre el capital invertit:** {roi:.2f}%")
 
-with st.expander("📑 Detall complet de despeses"):
-    st.markdown(f"""
-    - 🧹 **Neteja estimada**: CHF {neteja:,.0f}
-    - 💼 **Comissions plataformes**: CHF {comissions:,.0f}
-    - 💡 **Serveis anuals (assegurances, wifi, etc.)**: CHF {serveis:,.0f}
-    - 🏛️ **Taxes turístiques**: CHF {taxes_turistiques:,.0f}
-    - 🔧 **Manteniment i petites reparacions**: CHF {manteniment:,.0f}
-    """)
-
-# --- PIE CHART ---
-st.subheader("📊 Gràfic: Distribució de les despeses")
+# --- PIE CHART DE DESPESES ---
+st.subheader("📊 Distribució de les despeses")
 labels = ['Neteja', 'Comissions', 'Serveis', 'Taxes turístiques', 'Manteniment']
 sizes = [neteja, comissions, serveis, taxes_turistiques, manteniment]
-colors = ['#ff9999','#66b3ff','#99ff99','#ffcc99','#dddddd']
+colors = ['#ff9999','#66b3ff','#99ff99','#ffcc99','#c2c2f0']
+explode = (0.05, 0.05, 0.05, 0.05, 0.05)
+
 fig1, ax1 = plt.subplots()
-ax1.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140)
+ax1.pie(sizes, labels=labels, colors=colors, explode=explode, autopct='%1.1f%%', startangle=140, shadow=True)
 ax1.axis('equal')
 st.pyplot(fig1)
 
-# --- EVOLUCIÓ DEL BENEFICI ---
-st.subheader("📈 Evolució del benefici acumulat")
-years = list(range(1, 21))
-accumulated_profit = []
+# --- EVOLUCIÓ DEL BENEFICI I COSTOS ---
+st.subheader("📊 Evolució del benefici acumulat vs costos")
+years = np.arange(1, 21)
 profit = benefici_despres_hipoteca
-accumulated = 0
-break_even_year = None
-for year in years:
-    accumulated += profit
-    accumulated_profit.append(accumulated)
-    if break_even_year is None and accumulated >= (preu_pis * (aportacio / 100)):
-        break_even_year = year
+accumulated_profit = np.cumsum([profit]*20)
+costs = np.cumsum([despeses_totals + quota_hipoteca]*20)
+initial_investment = preu_pis * (aportacio / 100)
 
 fig2, ax2 = plt.subplots()
-ax2.plot(years, accumulated_profit, label='Benefici acumulat', linewidth=2)
-ax2.axhline(y=(preu_pis * (aportacio / 100)), color='red', linestyle='--', label='Inversió inicial')
-ax2.set_title("Evolució de l'inversió i punt d'equilibri")
+bar_width = 0.35
+ax2.bar(years - bar_width/2, accumulated_profit, bar_width, label='Benefici acumulat', color='#8fd694')
+ax2.bar(years + bar_width/2, costs, bar_width, label='Costos acumulats', color='#f08080')
+ax2.axhline(y=initial_investment, color='black', linestyle='--', label='Inversió inicial')
+ax2.set_title("Evolució de la inversió i punt d'equilibri")
 ax2.set_xlabel("Anys")
 ax2.set_ylabel("CHF")
 ax2.legend()
 st.pyplot(fig2)
 
-if break_even_year:
-    st.success(f"🎯 Break-even estimat: any {break_even_year}")
+break_even_year = next((i for i, total in enumerate(accumulated_profit) if total >= initial_investment), None)
+if break_even_year is not None:
+    st.success(f"🎯 Break-even estimat: any {break_even_year+1}")
 else:
     st.warning("No s'arriba a recuperar la inversió en 20 anys.")
