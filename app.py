@@ -83,6 +83,24 @@ benefici_net = ingressos_bruts - despeses_totals
 benefici_despres_hipoteca = benefici_net - quota_hipoteca
 roi = (benefici_despres_hipoteca / (preu_pis * (aportacio / 100))) * 100
 
+# --- MÈTRIQUES ADDICIONALS ---
+anys = 20
+cash_flows = [-initial_investment] + [benefici_despres_hipoteca] * anys
+irr = np.irr(cash_flows) * 100 if benefici_despres_hipoteca > 0 else None
+
+cash_on_cash = (benefici_despres_hipoteca / initial_investment) * 100
+gross_yield = (ingressos_bruts / preu_pis) * 100
+
+# Payback Period
+accumulated = 0
+payback_year = None
+for i in range(1, anys + 1):
+    accumulated += benefici_despres_hipoteca
+    if accumulated >= initial_investment:
+        payback_year = i
+        break
+
+
 # --- RESULTATS ---
 st.subheader("📈 Resultats anuals de la inversió")
 st.markdown(f"**Ingressos bruts estimats:** CHF {ingressos_bruts:,.0f}")
@@ -90,6 +108,20 @@ st.markdown(f"**Despeses totals (sense hipoteca):** CHF {despeses_totals:,.0f}")
 st.markdown(f"**Quota anual d'interès hipoteca (~1.9%):** CHF {quota_hipoteca:,.0f}")
 st.markdown(f"**Benefici net (després de tot):** CHF {benefici_despres_hipoteca:,.0f}")
 st.markdown(f"**ROI sobre el capital invertit:** {roi:.2f}%")
+
+
+st.markdown("### 📌 Altres mètriques")
+if irr is not None:
+    st.markdown(f"**IRR (Taxa Interna de Retorn):** {irr:.2f}%")
+else:
+    st.markdown("**IRR (Taxa Interna de Retorn):** No es pot calcular (benefici negatiu)")
+
+st.markdown(f"**Cash-on-Cash Return:** {cash_on_cash:.2f}%")
+st.markdown(f"**Yield Brut:** {gross_yield:.2f}%")
+if payback_year:
+    st.markdown(f"**Payback Period (anys per recuperar la inversió):** {payback_year}")
+else:
+    st.markdown("**Payback Period:** No es recupera la inversió en 20 anys")
 
 # --- PIE CHART DE DESPESES ---
 st.subheader("📊 Distribució de les despeses")
@@ -127,3 +159,8 @@ if break_even_year is not None:
     st.success(f"🎯 Break-even estimat: any {break_even_year+1}")
 else:
     st.warning("No s'arriba a recuperar la inversió en 20 anys.")
+
+
+
+
+
