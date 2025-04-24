@@ -2,6 +2,10 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+import easyocr
+import re
+from PIL import Image
+import io
 
 st.set_page_config(page_title="Simulador Inversió Turística a Suïssa", layout="centered")
 st.title("📊 Simulador de rendibilitat de pis turístic a Suïssa")
@@ -10,16 +14,47 @@ st.markdown("""
 Aquesta eina ajuda a persones amb **permís C o nacionalitat suïssa** a estimar el retorn de la inversió en pisos turístics a Suïssa.
 """)
 
+# OCR image processing
+def extract_data_from_image(image):
+    reader = easyocr.Reader(['en'])
+    result = reader.readtext(image, detail=0)
+
+    text = " ".join(result)
+
+    def extract_value(pattern, cast_fn=str, default=None):
+        match = re.search(pattern, text)
+        return cast_fn(match.group(1).replace("’", "").replace(",", "")) if match else default
+
+    return {
+        "preu": extract_value(r"CHF\s([\d'’]+)", lambda x: int(x)),
+        "habitacions": extract_value(r"Number of rooms\s+(\d[½1/2]*)", lambda x: float(x.replace('½', '.5'))),
+        "superficie": extract_value(r"Living ?space\s+(\d+)", int),
+        "renovacio": extract_value(r"Year of renovation\s+(\d{4})", int),
+        "planta": extract_value(r"Floor\s+([^\n]+)")
+    }
+
+# Upload image
+st.subheader("📷 Carrega una captura de pantalla de Flatfox (opcional)")
+uploaded_file = st.file_uploader("Carrega una captura com la de Flatfox", type=["jpg", "jpeg", "png"])
+
+image_data = {}
+if uploaded_file:
+    image = Image.open(uploaded_file)
+    st.image(image, caption="Captura carregada", use_column_width=True)
+    image_data = extract_data_from_image(image)
+    st.success("Informació extreta automàticament de la imatge!")
+
 # --- ZONES PERMESES ---
 zones_permeses = ["Interlaken", "Zermatt", "Verbier", "Grindelwald", "Lugano", "Zurich", "Lucerna"]
 
 # --- INPUTS ---
+st.subheader("✍️ Dades de la propietat")
 col1, col2 = st.columns(2)
 
 with col1:
     permis = st.selectbox("Permís de residència", ["C", "Suís"])
     zona = st.selectbox("Zona turística", zones_permeses)
-    preu_pis = st.number_input("Preu total del pis (CHF)", min_value=200000, value=600000, step=10000)
+    preu_pis = st.number_input("Preu total del pis (CHF)", min_value=200000, value=image_data.get("preu", 600000), step=10000)
     aportacio = st.slider("Aportació pròpia (%)", 10, 100, 20)
 
 with col2:
