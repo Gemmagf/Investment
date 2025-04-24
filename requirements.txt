@@ -1,5 +1,6 @@
 streamlit
-pandas
 matplotlib
-easyocr
+pandas
+numpy
 pillow
+easyocr
