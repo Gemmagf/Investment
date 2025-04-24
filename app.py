@@ -18,7 +18,6 @@ Aquesta eina ajuda a persones amb **permís C o nacionalitat suïssa** a estimar
 def extract_data_from_image(image):
     reader = easyocr.Reader(['en'])
     result = reader.readtext(image, detail=0)
-
     text = " ".join(result)
 
     def extract_value(pattern, cast_fn=str, default=None):
@@ -33,19 +32,45 @@ def extract_data_from_image(image):
         "planta": extract_value(r"Floor\s+([^\n]+)")
     }
 
+# --- ZONES PERMESES I DADES PÚBLIQUES ---
+zones_permeses = ["Interlaken", "Zermatt", "Verbier", "Grindelwald", "Lugano", "Zurich", "Lucerna"]
+dades_zones = {
+    "Interlaken": {"preu_nit": 250, "ocupacio": 70},
+    "Zermatt": {"preu_nit": 300, "ocupacio": 65},
+    "Verbier": {"preu_nit": 280, "ocupacio": 68},
+    "Grindelwald": {"preu_nit": 240, "ocupacio": 72},
+    "Lugano": {"preu_nit": 180, "ocupacio": 60},
+    "Zurich": {"preu_nit": 200, "ocupacio": 55},
+    "Lucerna": {"preu_nit": 220, "ocupacio": 60}
+}
+
 # Upload image
 st.subheader("📷 Carrega una captura de pantalla de Flatfox (opcional)")
 uploaded_file = st.file_uploader("Carrega una captura com la de Flatfox", type=["jpg", "jpeg", "png"])
 
 image_data = {}
+zona_default = zones_permeses[0]
+preu_nit_default = 280
+ocupacio_default = 65
+
 if uploaded_file:
     image = Image.open(uploaded_file)
     st.image(image, caption="Captura carregada", use_column_width=True)
     image_data = extract_data_from_image(image)
     st.success("Informació extreta automàticament de la imatge!")
 
-# --- ZONES PERMESES ---
-zones_permeses = ["Interlaken", "Zermatt", "Verbier", "Grindelwald", "Lugano", "Zurich", "Lucerna"]
+    text = " ".join(easyocr.Reader(['en']).readtext(image, detail=0))
+    zona_detectada = None
+    for zona_nom in zones_permeses:
+        if zona_nom.lower() in text.lower():
+            zona_detectada = zona_nom
+            break
+
+    if zona_detectada:
+        st.info(f"🏔️ Zona detectada automàticament: **{zona_detectada}**")
+        zona_default = zona_detectada
+        preu_nit_default = dades_zones.get(zona_detectada, {}).get("preu_nit", 280)
+        ocupacio_default = dades_zones.get(zona_detectada, {}).get("ocupacio", 65)
 
 # --- INPUTS ---
 st.subheader("✍️ Dades de la propietat")
@@ -53,14 +78,14 @@ col1, col2 = st.columns(2)
 
 with col1:
     permis = st.selectbox("Permís de residència", ["C", "Suís"])
-    zona = st.selectbox("Zona turística", zones_permeses)
+    zona = st.selectbox("Zona turística", zones_permeses, index=zones_permeses.index(zona_default))
     preu_pis = st.number_input("Preu total del pis (CHF)", min_value=200000, value=image_data.get("preu", 600000), step=10000)
     aportacio = st.slider("Aportació pròpia (%)", 10, 100, 20)
 
 with col2:
     capacitat = st.selectbox("Capacitat del pis", [2, 4, 6])
-    preu_nit = st.number_input("Preu mitjà per nit (CHF)", min_value=50, value=280, step=10)
-    ocupacio = st.slider("Ocupació anual (%)", 30, 100, 65)
+    preu_nit = st.number_input("Preu mitjà per nit (CHF)", min_value=50, value=preu_nit_default, step=10)
+    ocupacio = st.slider("Ocupació anual (%)", 30, 100, ocupacio_default)
     any_lloguer = st.checkbox("Està llogat tot l'any?", value=True)
 
 # --- CÀLCULS ---
@@ -81,7 +106,9 @@ manteniment = 1500
 despeses_totals = neteja + comissions + serveis + taxes_turistiques + manteniment
 benefici_net = ingressos_bruts - despeses_totals
 benefici_despres_hipoteca = benefici_net - quota_hipoteca
-roi = (benefici_despres_hipoteca / (preu_pis * (aportacio / 100))) * 100
+
+initial_investment = preu_pis * (aportacio / 100)
+roi = (benefici_despres_hipoteca / initial_investment) * 100
 
 # --- MÈTRIQUES ADDICIONALS ---
 anys = 20
@@ -100,7 +127,6 @@ for i in range(1, anys + 1):
         payback_year = i
         break
 
-
 # --- RESULTATS ---
 st.subheader("📈 Resultats anuals de la inversió")
 st.markdown(f"**Ingressos bruts estimats:** CHF {ingressos_bruts:,.0f}")
@@ -108,7 +134,6 @@ st.markdown(f"**Despeses totals (sense hipoteca):** CHF {despeses_totals:,.0f}")
 st.markdown(f"**Quota anual d'interès hipoteca (~1.9%):** CHF {quota_hipoteca:,.0f}")
 st.markdown(f"**Benefici net (després de tot):** CHF {benefici_despres_hipoteca:,.0f}")
 st.markdown(f"**ROI sobre el capital invertit:** {roi:.2f}%")
-
 
 st.markdown("### 📌 Altres mètriques")
 if irr is not None:
@@ -141,7 +166,6 @@ years = np.arange(1, 21)
 profit = benefici_despres_hipoteca
 accumulated_profit = np.cumsum([profit]*20)
 costs = np.cumsum([despeses_totals + quota_hipoteca]*20)
-initial_investment = preu_pis * (aportacio / 100)
 
 fig2, ax2 = plt.subplots()
 bar_width = 0.35
@@ -159,8 +183,3 @@ if break_even_year is not None:
     st.success(f"🎯 Break-even estimat: any {break_even_year+1}")
 else:
     st.warning("No s'arriba a recuperar la inversió en 20 anys.")
-
-
-
-
-
