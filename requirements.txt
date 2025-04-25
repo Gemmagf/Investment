@@ -1,6 +1,7 @@
 streamlit
+pillow
+numpy
 matplotlib
 pandas
-numpy
-pillow
 easyocr
+numpy-financial
