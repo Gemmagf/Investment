@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy_financial as npf
 import easyocr
+import numpy as np
 import re
 from PIL import Image
 import io
