@@ -1,7 +1,7 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import pandas as pd
-import numpy as np
+import numpy_financial as npf
 import easyocr
 import re
 from PIL import Image
@@ -113,7 +113,7 @@ roi = (benefici_despres_hipoteca / initial_investment) * 100
 # --- MÈTRIQUES ADDICIONALS ---
 anys = 20
 cash_flows = [-initial_investment] + [benefici_despres_hipoteca] * anys
-irr = np.irr(cash_flows) * 100 if benefici_despres_hipoteca > 0 else None
+irr = npf.irr(cash_flows) * 100 if benefici_despres_hipoteca > 0 else None
 
 cash_on_cash = (benefici_despres_hipoteca / initial_investment) * 100
 gross_yield = (ingressos_bruts / preu_pis) * 100
