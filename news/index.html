@@ -17,7 +17,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Public+Sans:wght@400;500;600&display=swap">
 <style>
-/* Disposició: una columna de lectura (màx. 680px); a dalt el giny rotatiu, a sota la llista per categories. */
+/* Disposició: una columna de lectura (màx. 680px); a dalt el giny rotatiu, després les vistes
+   (Noves · Desades · Seguiment · Llegides), els filtres per categoria i la llista. */
 :root {
   --bg: #f4f6f8;        /* fons: gris fred molt clar */
   --surface: #ffffff;   /* targetes */
@@ -27,9 +28,11 @@
   --line: #d6dde4;      /* vores */
   --accent: #0e6b74;    /* petroli: enllaços, xip actiu, barra de progrés */
   --accent-fg: #ffffff;
+  --accent-soft: #dcefef;
   --widget: #16202a;    /* fons del giny (fosc sempre, com un giny d'iOS) */
   --widget-fg: #f6f8fa;
   --widget-muted: #a9b4c0;
+  --new: #d8413c;       /* punt de "nou" */
   --shadow: 0 10px 30px rgba(22, 32, 42, .12);
   --font-ui: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-head: "Newsreader", Georgia, "Times New Roman", serif;
@@ -39,14 +42,14 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #0f1317; --surface: #171c22; --surface-2: #222933; --fg: #e8edf2; --muted: #93a0ad;
-    --line: #2b3440; --accent: #4fb7bf; --accent-fg: #0b1a1c; --widget: #1c2430; --widget-fg: #f3f6f9;
-    --widget-muted: #a5b1be; --shadow: 0 10px 30px rgba(0, 0, 0, .45); color-scheme: dark;
+    --line: #2b3440; --accent: #4fb7bf; --accent-fg: #0b1a1c; --accent-soft: #15353a; --widget: #1c2430; --widget-fg: #f3f6f9;
+    --widget-muted: #a5b1be; --new: #ff6b63; --shadow: 0 10px 30px rgba(0, 0, 0, .45); color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #0f1317; --surface: #171c22; --surface-2: #222933; --fg: #e8edf2; --muted: #93a0ad;
-  --line: #2b3440; --accent: #4fb7bf; --accent-fg: #0b1a1c; --widget: #1c2430; --widget-fg: #f3f6f9;
-  --widget-muted: #a5b1be; --shadow: 0 10px 30px rgba(0, 0, 0, .45); color-scheme: dark;
+  --line: #2b3440; --accent: #4fb7bf; --accent-fg: #0b1a1c; --accent-soft: #15353a; --widget: #1c2430; --widget-fg: #f3f6f9;
+  --widget-muted: #a5b1be; --new: #ff6b63; --shadow: 0 10px 30px rgba(0, 0, 0, .45); color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
@@ -61,7 +64,7 @@ a { color: var(--accent); }
 button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
 button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
 
-.wrap { max-width: 680px; margin: 0 auto; display: grid; gap: 18px; padding-block: 14px 0; }
+.wrap { max-width: 680px; margin: 0 auto; display: grid; gap: 16px; padding-block: 14px 0; }
 
 /* Capçalera */
 .top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
@@ -76,41 +79,40 @@ button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px soli
 }
 .widget .eyebrow { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--widget-muted); font-weight: 600; }
 .widget .eyebrow .cat { display: inline-flex; align-items: center; gap: 6px; }
-.widget .eyebrow .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c, #9fb3c8); }
-.widget .headline {
-  font: 500 24px/1.22 var(--font-head); margin: 0; text-wrap: balance; letter-spacing: -.005em;
-  text-align: left; width: 100%; color: inherit;
-}
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c, #9fb3c8); flex: 0 0 auto; }
+.widget .headline { font: 500 24px/1.22 var(--font-head); margin: 0; text-wrap: balance; letter-spacing: -.005em; text-align: left; width: 100%; color: inherit; }
 .widget .headline:hover { text-decoration: underline; text-decoration-color: var(--widget-muted); text-underline-offset: 3px; }
 .widget .src { font-size: 13px; color: var(--widget-muted); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.widget .detail { font-size: 15px; line-height: 1.5; color: var(--widget-fg); display: grid; gap: 10px; padding-top: 4px; border-top: 1px solid rgba(255,255,255,.14); margin-top: 2px; }
+.widget .detail { font-size: 15px; line-height: 1.5; display: grid; gap: 10px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,.14); margin-top: 2px; }
 .widget .detail a { color: #9fdbe0; font-weight: 600; text-decoration: none; }
-.widget .detail a:hover { text-decoration: underline; }
 .widget .nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 4px; }
 .widget .dots { display: flex; gap: 5px; flex: 1; }
 .widget .dots span { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,.22); overflow: hidden; position: relative; }
 .widget .dots span.done { background: rgba(255,255,255,.55); }
-.widget .dots span.on::after {
-  content: ""; position: absolute; inset: 0; background: #9fdbe0; transform-origin: left;
-  transform: scaleX(0); animation: fill var(--dur, 8s) linear forwards;
-}
+.widget .dots span.on::after { content: ""; position: absolute; inset: 0; background: #9fdbe0; transform-origin: left; transform: scaleX(0); animation: fill var(--dur, 8s) linear forwards; }
 .widget.paused .dots span.on::after { animation-play-state: paused; }
 @keyframes fill { to { transform: scaleX(1); } }
 .widget .arrows { display: flex; gap: 4px; }
 .widget .arrows button { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,.1); color: var(--widget-fg); display: grid; place-items: center; font-size: 16px; }
 .widget .arrows button:hover { background: rgba(255,255,255,.2); }
-.widget.empty { place-items: center; color: var(--widget-muted); text-align: center; }
+.widget.empty { place-items: center; color: var(--widget-muted); text-align: center; min-height: 120px; }
+.widget .actions .act { background: rgba(255,255,255,.1); color: var(--widget-fg); }
+.widget .actions .act[aria-pressed="true"] { background: #9fdbe0; color: #10262a; }
 
-/* Filtres */
+/* Vistes */
+.tabs { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--surface-2); border-radius: 12px; padding: 3px; gap: 2px; }
+.tabs button { padding: 8px 4px; border-radius: 9px; font-size: 13px; font-weight: 500; color: var(--muted); display: inline-flex; justify-content: center; align-items: center; gap: 5px; position: relative; }
+.tabs button[aria-pressed="true"] { background: var(--surface); color: var(--fg); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+.tabs .n { font-size: 11.5px; font-variant-numeric: tabular-nums; background: var(--line); border-radius: 999px; padding: 1px 6px; }
+.tabs button[aria-pressed="true"] .n { background: var(--accent); color: var(--accent-fg); }
+.tabs .pip { width: 7px; height: 7px; border-radius: 50%; background: var(--new); }
+
+/* Filtres de categoria */
 .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
 .chips::-webkit-scrollbar { display: none; }
-.chip {
-  flex: 0 0 auto; display: inline-flex; align-items: center; gap: 7px; padding: 7px 13px; border-radius: 999px;
-  background: var(--surface-2); color: var(--fg); font-size: 13px; font-weight: 500; white-space: nowrap;
-  border: 1px solid transparent;
-}
+.chip { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 7px; padding: 7px 13px; border-radius: 999px; background: var(--surface-2); color: var(--fg); font-size: 13px; font-weight: 500; white-space: nowrap; }
 .chip .n { color: var(--muted); font-variant-numeric: tabular-nums; font-weight: 400; }
-.chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c, var(--muted)); }
+.chip .dot { width: 7px; height: 7px; }
 .chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); }
 .chip[aria-pressed="true"] .n { color: inherit; opacity: .8; }
 .chip[aria-pressed="true"] .dot { background: var(--accent-fg); }
@@ -119,19 +121,42 @@ button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px soli
 .list { display: grid; gap: 8px; }
 .day { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding: 10px 2px 2px; }
 .item { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
-.item summary { list-style: none; display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; padding: 12px 14px; cursor: pointer; }
+.item.read { opacity: .72; }
+.item summary { list-style: none; display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; padding: 12px 12px 12px 14px; cursor: pointer; align-items: center; }
 .item summary::-webkit-details-marker { display: none; }
 .item .t { font-weight: 500; font-size: 15.5px; line-height: 1.35; grid-column: 1; }
+.item .t .newdot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--new); margin: 0 6px 2px 0; }
 .item .m { grid-column: 1; color: var(--muted); font-size: 12.5px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-.item .m .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c, var(--muted)); }
-.item .chev { grid-column: 2; grid-row: 1 / span 2; align-self: center; color: var(--muted); transition: transform .2s; }
-.item[open] .chev { transform: rotate(180deg); }
-.item .body { padding: 0 14px 14px; display: grid; gap: 10px; color: var(--fg); font-size: 15px; line-height: 1.5; }
+.item .m .dot { width: 7px; height: 7px; }
+.badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; letter-spacing: .03em; padding: 1px 7px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.item .side { grid-column: 2; grid-row: 1 / span 2; display: flex; align-items: center; gap: 2px; }
+.item .side .chev { color: var(--muted); transition: transform .2s; padding: 6px 4px; }
+.item[open] .side .chev { transform: rotate(180deg); }
+.item .side .quick { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; color: var(--muted); font-size: 16px; }
+.item .side .quick:hover { background: var(--surface-2); color: var(--accent); }
+.item .body { padding: 0 14px 14px; display: grid; gap: 12px; color: var(--fg); font-size: 15px; line-height: 1.5; }
 .item .body .orig { color: var(--muted); font-size: 13px; }
-.item .body a.go { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; text-decoration: none; }
-.item .body a.go:hover { text-decoration: underline; }
+a.go { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; text-decoration: none; }
+a.go:hover { text-decoration: underline; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.act { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px; background: var(--surface-2); font-size: 13px; font-weight: 500; }
+.act[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); }
+.act.primary { background: var(--accent-soft); color: var(--accent); }
+
+/* Seguiment */
+.story { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px; display: grid; gap: 10px; }
+.story h3 { margin: 0; font: 600 18px/1.3 var(--font-head); text-wrap: balance; }
+.story .sm { color: var(--muted); font-size: 12.5px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.story .sub { display: grid; gap: 6px; border-top: 1px solid var(--line); padding-top: 10px; }
+.story .sub .item { border-radius: 10px; }
+.story .none { color: var(--muted); font-size: 13.5px; }
+
 .hint { color: var(--muted); font-size: 12.5px; text-align: center; padding-top: 8px; line-height: 1.5; }
-.status { color: var(--muted); font-size: 14px; text-align: center; padding: 24px 0; }
+.status { color: var(--muted); font-size: 14px; text-align: center; padding: 24px 12px; line-height: 1.5; }
+
+/* Avís amb desfer */
+.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--widget); color: var(--widget-fg); border-radius: 999px; padding: 10px 10px 10px 16px; display: flex; gap: 12px; align-items: center; box-shadow: var(--shadow); font-size: 14px; max-width: calc(100vw - 32px); z-index: 5; }
+.toast button { background: rgba(255,255,255,.14); color: inherit; border-radius: 999px; padding: 6px 12px; font-weight: 600; }
 
 @media (min-width: 560px) {
   .widget { padding: 22px 24px 18px; min-height: 220px; }
@@ -140,7 +165,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px soli
 }
 @media (prefers-reduced-motion: reduce) {
   .widget .dots span.on::after { animation: none; transform: scaleX(1); }
-  .item .chev { transition: none; }
+  .item .side .chev { transition: none; }
 }
 </style>
 </head>
@@ -155,11 +180,11 @@ button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px soli
     <div class="status">Carregant notícies…</div>
   </section>
 
+  <nav class="tabs" id="tabs" aria-label="Vistes"></nav>
   <nav class="chips" id="chips" aria-label="Categories"></nav>
-
   <section class="list" id="list"></section>
 
-  <p class="hint" id="hint" hidden>A l’iPhone: Compartir → <b>Afegir a la pantalla d’inici</b> per tenir-ho com una app. Toca un titular per veure’n el resum i la font.</p>
+  <p class="hint" id="hint" hidden>Toca un titular per veure’n el resum, la font i les accions. Les notícies no llegides desapareixen al cap de 48 h, tret que les desis o en segueixis el tema. Les marques es guarden en aquest dispositiu.<br>A l’iPhone: Compartir → <b>Afegir a la pantalla d’inici</b>.</p>
 </main>
 
 <script>
@@ -167,16 +192,43 @@ button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px soli
   'use strict';
   var CAT_COLORS = { ubs: '#e4584f', suissa: '#d8413c', catalunya: '#f2b42b', espanya: '#e0a21e', mon: '#4f8ad8', tecnologia: '#9c7bde', recerca: '#3bb273' };
   var CAT_ORDER = ['ubs', 'suissa', 'catalunya', 'espanya', 'mon', 'tecnologia', 'recerca'];
-  var ROTATE_MS = 8000;
+  var VIEWS = [['noves', 'Noves'], ['desades', 'Desades'], ['seguiment', 'Seguiment'], ['llegides', 'Llegides']];
+  var ROTATE_MS = 8000, EXPIRE_MS = 48 * 3600 * 1000, READ_KEEP_MS = 7 * 24 * 3600 * 1000;
+  var STOP = {};
+  ('el la els les un una uns unes de del dels al als i o que per amb com més sense sobre entre fins des cap tot tots tota totes aquest aquesta aquests aquestes seu seva seus seves són està han hem ser pot podria segons davant després abans mentre quan també encara només contra fa feia ara avui ahir any anys ' +
+   'the and for with from that this into over after before while about their there what when which will would could says said than been have has into not are was were its his her they them new more most ' +
+   'los las del por con para una uno unos unas que como más pero sin sobre entre hasta desde cada todo todos este esta estos estas son está han ser puede según ante tras mientras cuando también aún solo contra hoy ayer año años ' +
+   'der die das und für mit von dem den des ein eine einer eines nach vor bei auf aus ist sind hat wird wurde werden auch noch nur gegen heute ' +
+   'noves nova nous segons podria sospesa demana anuncia informa explica publica repassa govern pais ciutat milions dolars euros persones president ministre setmana dissabte diumenge dilluns dimarts dimecres dijous divendres mati vespre primera primer gran grans altres altre davant despres mentre regles normes dades estudi investigadors cientifics mostra revela').split(' ').forEach(function (w) { STOP[w] = 1; });
 
   var $ = function (id) { return document.getElementById(id); };
-  var widgetEl = $('widget'), chipsEl = $('chips'), listEl = $('list'), metaEl = $('meta');
+  var widgetEl = $('widget'), tabsEl = $('tabs'), chipsEl = $('chips'), listEl = $('list'), metaEl = $('meta');
 
-  var data = null, items = [], labels = {}, filter = 'tot', featured = [], idx = 0, timer = null, detailOpen = false, paused = false;
+  var items = [], byId = {}, labels = {}, df = {}, featured = [], idx = 0, timer = null, detailOpen = false, paused = false;
+  var state = { read: {}, saved: {}, follow: {}, view: 'noves', filter: 'tot', lastVisit: 0 };
+  var prevVisit = 0, openIds = {};
 
-  try { filter = localStorage.getItem('noticies.filter') || 'tot'; } catch (e) {}
+  // ---------- estat local (només en aquest dispositiu) ----------
+  function loadState() {
+    try {
+      var raw = localStorage.getItem('noticies.v2');
+      if (raw) { var s = JSON.parse(raw); Object.keys(state).forEach(function (k) { if (s[k] !== undefined) state[k] = s[k]; }); }
+    } catch (e) {}
+    prevVisit = state.lastVisit || 0;
+    state.lastVisit = Date.now();
+    var cutoff = Date.now() - READ_KEEP_MS;
+    Object.keys(state.read).forEach(function (id) { if ((state.read[id].at || 0) < cutoff) delete state.read[id]; });
+    saveState();
+  }
+  function saveState() { try { localStorage.setItem('noticies.v2', JSON.stringify(state)); } catch (e) {} }
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function pub(it) { return new Date(it.published).getTime() || 0; }
+  function isRead(it) { return !!state.read[it.id]; }
+  function isSaved(it) { return !!state.saved[it.id]; }
+  function isFollowed(it) { return !!state.follow[it.id]; }
+  function isFresh(it) { return Date.now() - pub(it) <= EXPIRE_MS; }
+  function isNewSinceVisit(it) { return prevVisit && new Date(it.added).getTime() > prevVisit && !isRead(it); }
 
   function timeAgo(iso) {
     var d = new Date(iso); if (isNaN(d)) return '';
@@ -190,10 +242,10 @@ button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px soli
   }
   function dayLabel(iso) {
     var d = new Date(iso), now = new Date();
-    var sameDay = function (a, b) { return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); };
-    if (sameDay(d, now)) return 'Avui';
+    var same = function (a, b) { return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); };
+    if (same(d, now)) return 'Avui';
     var y = new Date(now); y.setDate(now.getDate() - 1);
-    if (sameDay(d, y)) return 'Ahir';
+    if (same(d, y)) return 'Ahir';
     return d.toLocaleDateString('ca-ES', { weekday: 'long', day: 'numeric', month: 'long' });
   }
   function fmtUpdated(iso) {
@@ -201,22 +253,124 @@ button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px soli
     return 'Actualitzat ' + d.toLocaleDateString('ca-ES', { day: 'numeric', month: 'short' }) + ', ' + d.toLocaleTimeString('ca-ES', { hour: '2-digit', minute: '2-digit' });
   }
 
-  // ---------- Giny rotatiu ----------
+  // ---------- seguiment: relacionar notícies de la mateixa història ----------
+  // Llocs i actors massa generals per identificar una història per si sols.
+  var BROAD = {};
+  'catalunya suissa espanya europa barcelona madrid zuric berna russia ucraina alemanya franca italia xina eua estats units regne unit govern congres parlament consell federal'.split(' ').forEach(function (w) { BROAD[w] = 1; });
+  function fold(w) { return w.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+  // Pes 3: sigla (UBS, FBI). Pes 2: nom propi (majúscula no inicial al titular català). Pes 1: paraula normal.
+  function tokens(text, orig) {
+    var out = {}, s = String(text || '');
+    (String(orig || '') + ' ' + s).replace(/\b([A-ZÀ-Ý]{2,5})\b/g, function (_, a) { var k = fold(a); if (!BROAD[k]) out[k] = 3; return _; });
+    (s.match(/(?:[^.!?:«»"]\s)([A-ZÀ-Ý][a-zà-ÿ]{3,})/g) || []).forEach(function (m) { var k = fold(m.slice(2)); if (!BROAD[k] && !out[k]) out[k] = 2; });
+    fold(s).split(/[^a-z0-9]+/).forEach(function (w) { if (w.length >= 4 && !STOP[w] && !BROAD[w] && !out[w]) out[w] = 1; });
+    return out;
+  }
+  function itemTokens(it, withSummary) {
+    var t = tokens(it.title, it.title_orig);
+    if (withSummary) { var u = tokens(it.summary || ''); Object.keys(u).forEach(function (k) { if (!t[k]) t[k] = 1; }); }
+    return t;
+  }
+  function buildDocFreq() {
+    df = {};
+    items.forEach(function (it) { Object.keys(itemTokens(it, false)).forEach(function (k) { df[k] = (df[k] || 0) + 1; }); });
+  }
+  // Dues notícies són de la mateixa història si comparteixen etiqueta de tema, o bé si els titulars
+  // comparteixen prou paraules poc freqüents (sigles, noms propis, termes rars).
+  function related(story, it) {
+    if (it.id === story.id) return false;
+    var st = story.tags || [], tt = it.tags || [];
+    for (var i = 0; i < st.length; i++) if (tt.indexOf(st[i]) >= 0) return true;
+    var a = itemTokens(story, false), b = itemTokens(it, true), common = [], score = 0;
+    Object.keys(a).forEach(function (k) { if (b[k]) { common.push(k); score += 1 / Math.max(1, df[k] || 1); } });
+    if (common.length >= 2 && score >= 0.6) return true;
+    if (common.length !== 1) return false;
+    var k = common[0], w = a[k], f = df[k] || 0;
+    return (w === 3 && f <= 5) || (w === 2 && f <= 2);
+  }
+  function followMatches(it) {
+    var ids = Object.keys(state.follow);
+    for (var i = 0; i < ids.length; i++) { var f = state.follow[ids[i]]; if (f && f.item && related(f.item, it)) return f.item; }
+    return null;
+  }
+
+  // ---------- conjunts per vista ----------
+  function visibleSet(view) {
+    var out = [];
+    if (view === 'noves') {
+      items.forEach(function (it) { if (!isRead(it) && (isFresh(it) || isSaved(it) || isFollowed(it) || followMatches(it))) out.push(it); });
+    } else if (view === 'desades') {
+      Object.keys(state.saved).forEach(function (id) { var it = byId[id] || state.saved[id].item; if (it && !isRead(it)) out.push(it); });
+    } else if (view === 'llegides') {
+      Object.keys(state.read).forEach(function (id) { var it = byId[id] || state.read[id].item; if (it) out.push(it); });
+      out.sort(function (a, b) { return (state.read[b.id].at || 0) - (state.read[a.id].at || 0); });
+      return out;
+    }
+    out.sort(function (a, b) { return pub(b) - pub(a); });
+    return out;
+  }
+  function filtered(rows) { return rows.filter(function (it) { return state.filter === 'tot' || it.category === state.filter; }); }
+
+  // ---------- accions ----------
+  var toastTimer = null;
+  function toast(msg, undo) {
+    var old = document.querySelector('.toast'); if (old) old.remove();
+    clearTimeout(toastTimer);
+    var el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role', 'status');
+    el.innerHTML = '<span>' + esc(msg) + '</span>' + (undo ? '<button type="button">Desfer</button>' : '');
+    if (undo) el.querySelector('button').onclick = function () { undo(); el.remove(); };
+    document.body.appendChild(el);
+    toastTimer = setTimeout(function () { el.remove(); }, 5000);
+  }
+  function markRead(it, on) {
+    if (on) { state.read[it.id] = { at: Date.now(), item: it }; delete state.saved[it.id]; }
+    else delete state.read[it.id];
+    saveState(); renderAll();
+    if (on) toast('Marcada com a llegida', function () { markRead(it, false); });
+  }
+  function toggleSaved(it) {
+    if (isSaved(it)) delete state.saved[it.id]; else state.saved[it.id] = { at: Date.now(), item: it };
+    saveState(); renderAll();
+  }
+  function toggleFollow(it) {
+    if (isFollowed(it)) delete state.follow[it.id]; else state.follow[it.id] = { since: Date.now(), item: it };
+    saveState(); renderAll();
+    if (isFollowed(it)) toast('Seguint aquest tema: les novetats sortiran a «Seguiment»');
+  }
+  function actionsHtml(it, dark) {
+    return '<div class="actions">' +
+      '<button class="act primary" data-a="read" data-id="' + esc(it.id) + '" aria-pressed="' + isRead(it) + '">' + (isRead(it) ? '↩ Marca com a no llegida' : '✓ Llegida') + '</button>' +
+      '<button class="act" data-a="save" data-id="' + esc(it.id) + '" aria-pressed="' + isSaved(it) + '">' + (isSaved(it) ? '🔖 Desada' : '🔖 Desar') + '</button>' +
+      '<button class="act" data-a="follow" data-id="' + esc(it.id) + '" aria-pressed="' + isFollowed(it) + '">' + (isFollowed(it) ? '◉ Seguint' : '◎ Seguir el tema') + '</button>' +
+      '</div>';
+  }
+  function bindActions(root) {
+    Array.prototype.forEach.call(root.querySelectorAll('[data-a]'), function (b) {
+      b.onclick = function (e) {
+        e.preventDefault(); e.stopPropagation();
+        var it = byId[b.getAttribute('data-id')] || (state.saved[b.getAttribute('data-id')] || {}).item || (state.read[b.getAttribute('data-id')] || {}).item || (state.follow[b.getAttribute('data-id')] || {}).item;
+        if (!it) return;
+        var a = b.getAttribute('data-a');
+        if (a === 'read') markRead(it, !isRead(it)); else if (a === 'save') toggleSaved(it); else if (a === 'follow') toggleFollow(it);
+      };
+    });
+  }
+
+  // ---------- giny rotatiu ----------
   function pickFeatured() {
-    var pool = items.slice();
-    pool.sort(function (a, b) { return (b.importance - a.importance) || (new Date(b.published) - new Date(a.published)); });
-    // Una notícia per categoria primer, perquè el giny vagi variant de tema.
+    var pool = visibleSet('noves').slice();
+    pool.sort(function (a, b) { return (b.importance - a.importance) || (pub(b) - pub(a)); });
     var seen = {}, first = [], rest = [];
     pool.forEach(function (it) { if (!seen[it.category]) { seen[it.category] = 1; first.push(it); } else rest.push(it); });
     return first.concat(rest).slice(0, 8);
   }
-
   function renderWidget() {
     if (!featured.length) {
       widgetEl.className = 'widget empty';
-      widgetEl.innerHTML = '<div>Encara no hi ha notícies. Torna-ho a mirar més tard.</div>';
+      widgetEl.innerHTML = '<div>No tens notícies noves per llegir.<br>La pàgina es renova cada 3 hores.</div>';
       return;
     }
+    if (idx >= featured.length) idx = 0;
     var it = featured[idx], c = CAT_COLORS[it.category] || '#9fb3c8';
     var dots = featured.map(function (_, i) { return '<span class="' + (i < idx ? 'done' : i === idx ? 'on' : '') + '"></span>'; }).join('');
     widgetEl.className = 'widget' + (paused || detailOpen ? ' paused' : '');
@@ -225,19 +379,19 @@ button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px soli
       '<div class="eyebrow"><span class="cat" style="--c:' + c + '"><span class="dot"></span>' + esc(labels[it.category] || it.category) + '</span><span>' + esc(timeAgo(it.published)) + '</span></div>' +
       '<button class="headline" id="wHead" aria-expanded="' + detailOpen + '">' + esc(it.title) + '</button>' +
       '<div class="src">' + esc(it.source) + (detailOpen ? '' : ' · <span>toca per veure el resum</span>') + '</div>' +
-      (detailOpen ? '<div class="detail"><div>' + esc(it.summary || 'Sense resum disponible; obre la font per llegir-ne més.') + '</div><a href="' + esc(it.url) + '" target="_blank" rel="noopener">Obre la font ↗</a></div>' : '') +
+      (detailOpen ? '<div class="detail"><div>' + esc(it.summary || 'Sense resum disponible; obre la font per llegir-ne més.') + '</div><a class="go" href="' + esc(it.url) + '" target="_blank" rel="noopener">Obre la font ↗</a>' + actionsHtml(it, true) + '</div>' : '') +
       '<div class="nav"><div class="dots">' + dots + '</div><div class="arrows"><button id="wPrev" aria-label="Anterior">‹</button><button id="wNext" aria-label="Següent">›</button></div></div>';
     $('wHead').onclick = function () { detailOpen = !detailOpen; renderWidget(); schedule(); };
     $('wPrev').onclick = function () { go(-1); };
     $('wNext').onclick = function () { go(1); };
+    bindActions(widgetEl);
   }
-  function go(step) { idx = (idx + step + featured.length) % featured.length; detailOpen = false; renderWidget(); schedule(); }
+  function go(step) { if (!featured.length) return; idx = (idx + step + featured.length) % featured.length; detailOpen = false; renderWidget(); schedule(); }
   function schedule() {
     clearTimeout(timer);
     if (featured.length < 2 || detailOpen || paused || document.hidden) return;
     timer = setTimeout(function () { go(1); }, ROTATE_MS);
   }
-
   widgetEl.addEventListener('mouseenter', function () { paused = true; renderWidget(); schedule(); });
   widgetEl.addEventListener('mouseleave', function () { paused = false; renderWidget(); schedule(); });
   var tx = null;
@@ -246,53 +400,112 @@ button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px soli
     if (tx == null) return; var dx = e.changedTouches[0].clientX - tx; tx = null;
     if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
   });
-  document.addEventListener('visibilitychange', function () { if (!document.hidden) { renderWidget(); } schedule(); });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) renderWidget(); schedule(); });
 
-  // ---------- Filtres i llista ----------
+  // ---------- vistes i filtres ----------
+  function renderTabs() {
+    var counts = { noves: visibleSet('noves').length, desades: visibleSet('desades').length, seguiment: Object.keys(state.follow).length, llegides: visibleSet('llegides').length };
+    var newInFollow = Object.keys(state.follow).some(function (id) { var f = state.follow[id]; return items.some(function (it) { return !isRead(it) && related(f.item, it); }); });
+    tabsEl.innerHTML = VIEWS.map(function (v) {
+      var k = v[0];
+      return '<button data-view="' + k + '" aria-pressed="' + (state.view === k) + '">' + v[1] +
+        (counts[k] ? ' <span class="n">' + counts[k] + '</span>' : '') + (k === 'seguiment' && newInFollow ? '<span class="pip" title="Novetats"></span>' : '') + '</button>';
+    }).join('');
+    Array.prototype.forEach.call(tabsEl.children, function (b) {
+      b.onclick = function () { state.view = b.getAttribute('data-view'); saveState(); renderTabs(); renderChips(); renderList(); };
+    });
+  }
   function renderChips() {
-    var counts = {}; items.forEach(function (it) { counts[it.category] = (counts[it.category] || 0) + 1; });
+    if (state.view === 'seguiment') { chipsEl.hidden = true; return; }
+    chipsEl.hidden = false;
+    var rows = visibleSet(state.view), counts = {};
+    rows.forEach(function (it) { counts[it.category] = (counts[it.category] || 0) + 1; });
     var cats = ['tot'].concat(CAT_ORDER.filter(function (c) { return counts[c]; }));
-    if (filter !== 'tot' && !counts[filter]) filter = 'tot';
+    if (state.filter !== 'tot' && !counts[state.filter]) state.filter = 'tot';
     chipsEl.innerHTML = cats.map(function (c) {
-      var n = c === 'tot' ? items.length : counts[c];
-      return '<button class="chip" data-cat="' + c + '" aria-pressed="' + (filter === c) + '" style="--c:' + (CAT_COLORS[c] || 'var(--muted)') + '">' +
+      var n = c === 'tot' ? rows.length : counts[c];
+      return '<button class="chip" data-cat="' + c + '" aria-pressed="' + (state.filter === c) + '" style="--c:' + (CAT_COLORS[c] || 'var(--muted)') + '">' +
         (c === 'tot' ? '' : '<span class="dot"></span>') + esc(c === 'tot' ? 'Tot' : labels[c] || c) + ' <span class="n">' + n + '</span></button>';
     }).join('');
     Array.prototype.forEach.call(chipsEl.children, function (b) {
-      b.onclick = function () { filter = b.getAttribute('data-cat'); try { localStorage.setItem('noticies.filter', filter); } catch (e) {} renderChips(); renderList(); };
+      b.onclick = function () { state.filter = b.getAttribute('data-cat'); saveState(); renderChips(); renderList(); };
     });
+  }
+
+  function itemHtml(it, opts) {
+    opts = opts || {};
+    var c = CAT_COLORS[it.category] || 'var(--muted)';
+    var showOrig = it.title_orig && it.lang !== 'ca' && it.title_orig !== it.title;
+    var story = !opts.inStory && !isFollowed(it) ? followMatches(it) : null;
+    var badges = (isSaved(it) ? '<span class="badge">🔖 desada</span>' : '') +
+      (isFollowed(it) ? '<span class="badge">◉ seguint</span>' : '') +
+      (story ? '<span class="badge" title="' + esc(story.title) + '">◉ seguiment</span>' : '') +
+      (!isFresh(it) && !isRead(it) ? '<span class="badge">&gt; 48 h</span>' : '');
+    return '<details class="item' + (isRead(it) ? ' read' : '') + '" data-id="' + esc(it.id) + '"' + (openIds[it.id] ? ' open' : '') + '>' +
+      '<summary><div class="t">' + (isNewSinceVisit(it) ? '<span class="newdot" title="Nova des de la darrera visita"></span>' : '') + esc(it.title) + '</div>' +
+      '<div class="m" style="--c:' + c + '"><span class="dot"></span>' + esc(labels[it.category] || it.category) + ' · ' + esc(it.source) + ' · ' + esc(timeAgo(it.published)) + badges + '</div>' +
+      '<div class="side">' + (isRead(it) ? '' : '<button class="quick" data-a="read" data-id="' + esc(it.id) + '" title="Marca com a llegida" aria-label="Marca com a llegida">✓</button>') + '<span class="chev" aria-hidden="true">⌄</span></div></summary>' +
+      '<div class="body"><div>' + esc(it.summary || 'Sense resum disponible; obre la font per llegir-ne més.') + '</div>' +
+      (showOrig ? '<div class="orig">Titular original: ' + esc(it.title_orig) + '</div>' : '') +
+      '<a class="go" href="' + esc(it.url) + '" target="_blank" rel="noopener">Obre la font ↗</a>' + actionsHtml(it) + '</div></details>';
   }
 
   function renderList() {
-    var rows = items.filter(function (it) { return filter === 'tot' || it.category === filter; });
-    rows.sort(function (a, b) { return new Date(b.published) - new Date(a.published); });
-    if (!rows.length) { listEl.innerHTML = '<div class="status">No hi ha notícies en aquesta categoria.</div>'; return; }
-    var html = '', lastDay = null;
-    rows.forEach(function (it) {
-      var day = dayLabel(it.published);
-      if (day !== lastDay) { html += '<div class="day">' + esc(day) + '</div>'; lastDay = day; }
-      var c = CAT_COLORS[it.category] || 'var(--muted)';
-      var showOrig = it.title_orig && it.lang !== 'ca' && it.title_orig !== it.title;
-      html += '<details class="item" id="it-' + esc(it.id) + '">' +
-        '<summary><div class="t">' + esc(it.title) + '</div>' +
-        '<div class="m" style="--c:' + c + '"><span class="dot"></span>' + esc(labels[it.category] || it.category) + ' · ' + esc(it.source) + ' · ' + esc(timeAgo(it.published)) + '</div>' +
-        '<span class="chev" aria-hidden="true">⌄</span></summary>' +
-        '<div class="body"><div>' + esc(it.summary || 'Sense resum disponible; obre la font per llegir-ne més.') + '</div>' +
-        (showOrig ? '<div class="orig">Titular original: ' + esc(it.title_orig) + '</div>' : '') +
-        '<a class="go" href="' + esc(it.url) + '" target="_blank" rel="noopener">Obre la font ↗</a></div></details>';
-    });
+    var html = '';
+    if (state.view === 'seguiment') {
+      var ids = Object.keys(state.follow).sort(function (a, b) { return state.follow[b].since - state.follow[a].since; });
+      if (!ids.length) html = '<div class="status">No segueixes cap tema. Obre una notícia i toca «Seguir el tema»: les novetats relacionades apareixeran aquí mentre n’hi hagi.</div>';
+      ids.forEach(function (id) {
+        var f = state.follow[id], st = byId[id] || f.item;
+        var rel = items.filter(function (it) { return related(st, it); }).sort(function (a, b) { return pub(b) - pub(a); });
+        var last = rel.length ? rel[0] : null;
+        html += '<article class="story"><h3>' + esc(st.title) + '</h3>' +
+          '<div class="sm">' + esc(labels[st.category] || st.category) + ' · ' + esc(st.source) + ' · seguint des de ' + new Date(f.since).toLocaleDateString('ca-ES', { day: 'numeric', month: 'short' }) +
+          (last ? ' · darrera novetat ' + esc(timeAgo(last.published)) : '') + '</div>' +
+          '<div class="actions"><a class="go" href="' + esc(st.url) + '" target="_blank" rel="noopener">Notícia inicial ↗</a><button class="act" data-a="follow" data-id="' + esc(st.id) + '" aria-pressed="true">◉ Deixar de seguir</button></div>' +
+          '<div class="sub">' + (rel.length ? rel.map(function (it) { return itemHtml(it, { inStory: true }); }).join('') : '<div class="none">Encara no hi ha novetats relacionades. Es comprova a cada actualització.</div>') + '</div></article>';
+      });
+    } else {
+      var rows = filtered(visibleSet(state.view));
+      if (!rows.length) {
+        html = '<div class="status">' + ({ noves: 'Estàs al dia: no hi ha notícies noves en aquesta categoria.', desades: 'No tens cap notícia desada per llegir més tard.', llegides: 'Encara no has marcat cap notícia com a llegida.' }[state.view]) + '</div>';
+      } else {
+        var lastDay = null;
+        rows.forEach(function (it) {
+          var key = state.view === 'llegides' ? new Date(state.read[it.id].at).toISOString() : it.published;
+          var day = dayLabel(key);
+          if (day !== lastDay) { html += '<div class="day">' + esc(state.view === 'llegides' ? 'Llegides ' + day.toLowerCase() : day) + '</div>'; lastDay = day; }
+          html += itemHtml(it);
+        });
+      }
+    }
     listEl.innerHTML = html;
+    bindActions(listEl);
+    Array.prototype.forEach.call(listEl.querySelectorAll('details.item'), function (d) {
+      d.addEventListener('toggle', function () { if (d.open) openIds[d.getAttribute('data-id')] = 1; else delete openIds[d.getAttribute('data-id')]; });
+    });
   }
 
-  // ---------- Càrrega ----------
+  function renderAll() {
+    var cur = featured[idx] && featured[idx].id;
+    featured = pickFeatured();
+    var ni = featured.findIndex(function (f) { return f.id === cur; });
+    if (ni >= 0) idx = ni; else { idx = Math.min(idx, Math.max(0, featured.length - 1)); detailOpen = false; }
+    renderWidget(); renderTabs(); renderChips(); renderList(); schedule();
+    var n = visibleSet('noves').length;
+    metaEl.textContent = (metaEl.getAttribute('data-upd') || '') + (n ? ' · ' + n + ' per llegir' : '');
+  }
+
+  // ---------- càrrega ----------
   function load() {
     fetch('news.json?t=' + Math.floor(Date.now() / 300000), { cache: 'no-cache' })
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function (d) {
-        data = d; items = (d.items || []).slice(); labels = d.categories || {};
-        metaEl.textContent = fmtUpdated(d.generated_at) + (d.mode === 'traduccio' ? ' · traducció automàtica' : '');
-        featured = pickFeatured(); idx = 0; detailOpen = false;
-        renderWidget(); renderChips(); renderList(); schedule();
+        items = (d.items || []).slice(); labels = d.categories || {}; byId = {};
+        items.forEach(function (it) { byId[it.id] = it; });
+        buildDocFreq();
+        metaEl.setAttribute('data-upd', fmtUpdated(d.generated_at) + (d.mode === 'traduccio' ? ' · traducció automàtica' : ''));
+        renderAll();
         $('hint').hidden = false;
       })
       .catch(function (err) {
@@ -301,8 +514,8 @@ button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px soli
         widgetEl.innerHTML = '<div>No s’han pogut carregar les notícies (' + esc(err.message) + '). Comprova que news.json existeixi al costat d’aquesta pàgina.</div>';
       });
   }
+  loadState();
   load();
-  // Torna a carregar cada 30 minuts si la pàgina queda oberta.
   setInterval(function () { if (!document.hidden) load(); }, 30 * 60000);
 })();
 </script>

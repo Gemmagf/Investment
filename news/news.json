@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-04T06:44+00:00",
+ "generated_at": "2026-10-04T06:50+00:00",
  "mode": "claude",
  "categories": {
   "ubs": "UBS",
@@ -21,8 +21,11 @@
    "lang": "es",
    "category": "espanya",
    "importance": 4,
+   "tags": [
+    "ceuta-trampolin"
+   ],
    "published": "2026-10-04T06:04+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "ara-cat-economia-catalunya-construeix-meitat-dels-pisos-necessita-1-5867924-html",
@@ -34,8 +37,11 @@
    "lang": "ca",
    "category": "catalunya",
    "importance": 4,
+   "tags": [
+    "habitatge-catalunya"
+   ],
    "published": "2026-10-04T06:00+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "i-paris-17-vegades-mes-habitatge-social-1-000-habitants-barcelona-1-5867297-html",
@@ -47,8 +53,11 @@
    "lang": "ca",
    "category": "catalunya",
    "importance": 3,
+   "tags": [
+    "habitatge-catalunya"
+   ],
    "published": "2026-10-04T06:00+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "ula-desgastat-fill-gran-bolsonaro-aglutina-vot-radical-descontent-1-5868435-html",
@@ -60,8 +69,11 @@
    "lang": "ca",
    "category": "mon",
    "importance": 4,
+   "tags": [
+    "brasil-eleccions"
+   ],
    "published": "2026-10-04T06:00+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "l-wahl-im-baltikum-regierungsbuendnis-in-lettland-gewinnt-ueberraschend-deutlich",
@@ -73,8 +85,11 @@
    "lang": "de",
    "category": "mon",
    "importance": 4,
+   "tags": [
+    "letonia-eleccions"
+   ],
    "published": "2026-10-04T05:53+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "tps-www-vilaweb-cat-noticies-videos-preocupacio-crescuda-riu-besos-santa-coloma",
@@ -86,8 +101,11 @@
    "lang": "ca",
    "category": "catalunya",
    "importance": 5,
+   "tags": [
+    "temporal-catalunya"
+   ],
    "published": "2026-10-04T05:48+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "td4bzmzuecyz0lbdfrsck8zbdz5mtdlefbpdefav2lltxviwtlledl3se5ltwxemthja09wsgdh-oc-5",
@@ -99,8 +117,11 @@
    "lang": "en",
    "category": "mon",
    "importance": 3,
+   "tags": [
+    "flydubai-copilot"
+   ],
    "published": "2026-10-04T05:44+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "ian-com-business-2026-oct-04-uk-car-industry-trade-off-china-made-in-europe-laws",
@@ -112,8 +133,11 @@
    "lang": "en",
    "category": "mon",
    "importance": 3,
+   "tags": [
+    "regne-unit-automocio"
+   ],
    "published": "2026-10-04T05:00+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "026-oct-04-polish-activists-launch-abortion-pill-locker-to-bypass-near-total-ban",
@@ -125,8 +149,11 @@
    "lang": "en",
    "category": "mon",
    "importance": 3,
+   "tags": [
+    "polonia-avortament"
+   ],
    "published": "2026-10-04T05:00+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "g-in-der-ukraine-kanzler-merz-zu-solidaritaetsbesuch-in-der-ukraine-eingetroffen",
@@ -138,8 +165,12 @@
    "lang": "de",
    "category": "mon",
    "importance": 4,
+   "tags": [
+    "merz-kiiv",
+    "ucraina-guerra"
+   ],
    "published": "2026-10-04T04:33+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "paralitza-134974021-utm-source-rss-noticias-utm-medium-feed-utm-campaign-portada",
@@ -151,8 +182,11 @@
    "lang": "ca",
    "category": "catalunya",
    "importance": 5,
+   "tags": [
+    "temporal-catalunya"
+   ],
    "published": "2026-10-04T04:01+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "t-les-aus-134973993-utm-source-rss-noticias-utm-medium-feed-utm-campaign-portada",
@@ -164,8 +198,11 @@
    "lang": "ca",
    "category": "catalunya",
    "importance": 3,
+   "tags": [
+    "aus-aquatiques"
+   ],
    "published": "2026-10-04T04:01+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "aft-hunderte-millionen-verlust-swiss-steel-nimmt-stellenabbau-in-deutschland-vor",
@@ -177,8 +214,11 @@
    "lang": "de",
    "category": "suissa",
    "importance": 3,
+   "tags": [
+    "swiss-steel"
+   ],
    "published": "2026-10-04T03:08+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "026-10-04-scientists-discover-how-the-brain-adds-new-information-to-old-memories",
@@ -190,8 +230,11 @@
    "lang": "en",
    "category": "recerca",
    "importance": 4,
+   "tags": [
+    "records-hipocamp"
+   ],
    "published": "2026-10-04T03:00+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "5ng9owepla0nbyje1vdz0nlphexnvogpicfder29kehdzcuvxqtd1tzu1etjxdwj4r19tu1j3aq-oc-5",
@@ -203,8 +246,11 @@
    "lang": "es",
    "category": "espanya",
    "importance": 5,
+   "tags": [
+    "habitatge-espanya-protestes"
+   ],
    "published": "2026-10-04T00:44+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "ional-nahost-krieg-im-nahen-osten-angriffe-auf-schiffe-in-der-strasse-von-hormus",
@@ -216,8 +262,11 @@
    "lang": "de",
    "category": "mon",
    "importance": 4,
+   "tags": [
+    "ormuz-atacs"
+   ],
    "published": "2026-10-03T20:42+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "t-politica-dilema-pedro-sanchez-convocar-eleccions-29-novembre-no-1-5868767-html",
@@ -229,8 +278,11 @@
    "lang": "ca",
    "category": "espanya",
    "importance": 4,
+   "tags": [
+    "sanchez-eleccions"
+   ],
    "published": "2026-10-03T20:40+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "runch-com-2026-10-03-federal-judge-calls-flock-indiscriminate-mass-surveillance",
@@ -242,8 +294,11 @@
    "lang": "en",
    "category": "tecnologia",
    "importance": 3,
+   "tags": [
+    "flock-vigilancia"
+   ],
    "published": "2026-10-03T19:33+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "26-10-03-azerbaijan-turkey-and-uzbekistan-join-forces-in-major-military-exercise",
@@ -255,8 +310,11 @@
    "lang": "en",
    "category": "mon",
    "importance": 3,
+   "tags": [
+    "exercici-power-of-unity"
+   ],
    "published": "2026-10-03T19:26+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "2026-10-03-amazon-responds-to-data-center-backlash-says-it-no-longer-uses-ndas",
@@ -268,8 +326,11 @@
    "lang": "en",
    "category": "tecnologia",
    "importance": 3,
+   "tags": [
+    "amazon-centres-dades"
+   ],
    "published": "2026-10-03T18:43+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "h-news-schweiz-durchbruch-beim-wohnungsbau-einfacher-bauen-in-der-ganzen-schweiz",
@@ -281,8 +342,11 @@
    "lang": "de",
    "category": "suissa",
    "importance": 4,
+   "tags": [
+    "suissa-habitatge-normes"
+   ],
    "published": "2026-10-03T18:06+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "jmzzxdvrta0w4mwnaywdlde1iylzdn0denhf5zkxax2g0wg82uwpmvmxqbxpautfmbupyny1qvw-oc-5",
@@ -294,8 +358,11 @@
    "lang": "en",
    "category": "tecnologia",
    "importance": 3,
+   "tags": [
+    "shinyhunters-fbi"
+   ],
    "published": "2026-10-03T16:48+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "vqxv2c5a0uzus1sbwdbthz1c2nqmlfqbe9hweztlwxlczfjbdlcnkthavmwz1nvsg5ptmtxy1vn-oc-5",
@@ -307,8 +374,12 @@
    "lang": "en",
    "category": "mon",
    "importance": 5,
+   "tags": [
+    "ucraina-guerra",
+    "kiiv-atacs"
+   ],
    "published": "2026-10-03T16:13+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "s-schweiz-ruecktritt-guy-parmelin-bundesrat-darf-man-zuruecktreten-wann-man-will",
@@ -320,8 +391,11 @@
    "lang": "de",
    "category": "suissa",
    "importance": 4,
+   "tags": [
+    "parmelin-relleu"
+   ],
    "published": "2026-10-03T16:09+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "jack-dorseys-bitchat-disappears-from-app-stores-in-india-after-government-order",
@@ -333,8 +407,11 @@
    "lang": "en",
    "category": "tecnologia",
    "importance": 3,
+   "tags": [
+    "bitchat-india"
+   ],
    "published": "2026-10-03T15:02+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "ge-com-ai-artificial-intelligence-1004408-openai-safety-quits-sounding-the-alarm",
@@ -346,8 +423,11 @@
    "lang": "en",
    "category": "tecnologia",
    "importance": 3,
+   "tags": [
+    "openai-seguretat"
+   ],
    "published": "2026-10-03T14:31+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "https-www-sciencedaily-com-releases-2026-10-261001214102-htm",
@@ -359,8 +439,11 @@
    "lang": "en",
    "category": "recerca",
    "importance": 3,
+   "tags": [
+    "juice-jupiter"
+   ],
    "published": "2026-10-03T13:34+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "https-www-sciencedaily-com-releases-2026-10-261001214015-htm",
@@ -372,8 +455,11 @@
    "lang": "en",
    "category": "recerca",
    "importance": 3,
+   "tags": [
+    "change6-sol-lunar"
+   ],
    "published": "2026-10-03T13:12+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "https-empreses-ara-cat-empreses-l-incert-futur-marca-seat-1-5867355-html",
@@ -385,8 +471,11 @@
    "lang": "ca",
    "category": "catalunya",
    "importance": 4,
+   "tags": [
+    "seat-futur"
+   ],
    "published": "2026-10-03T13:00+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "https-www-sciencedaily-com-releases-2026-10-261001214012-htm",
@@ -398,8 +487,11 @@
    "lang": "en",
    "category": "recerca",
    "importance": 3,
+   "tags": [
+    "megatron-primeres-estrelles"
+   ],
    "published": "2026-10-03T12:50+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "https-www-sciencedaily-com-releases-2026-10-261001095319-htm",
@@ -411,8 +503,11 @@
    "lang": "en",
    "category": "recerca",
    "importance": 3,
+   "tags": [
+    "leucina-mitocondris"
+   ],
    "published": "2026-10-03T12:33+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "https-www-sciencedaily-com-releases-2026-09-260930225459-htm",
@@ -424,8 +519,11 @@
    "lang": "en",
    "category": "recerca",
    "importance": 4,
+   "tags": [
+    "alzheimer-imp"
+   ],
    "published": "2026-10-03T12:13+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "https-www-sciencedaily-com-releases-2026-09-260930225456-htm",
@@ -437,8 +535,11 @@
    "lang": "en",
    "category": "recerca",
    "importance": 3,
+   "tags": [
+    "superconductivitat-buit"
+   ],
    "published": "2026-10-03T12:03+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "mc1hxzgxumzisxnerje3rfjyqlhpy0ticmrrcllubhdkowzcaxz5m1rksk9zbk1wannhehrkm3c-oc-5",
@@ -450,8 +551,11 @@
    "lang": "en",
    "category": "suissa",
    "importance": 3,
+   "tags": [
+    "suissa-trucades"
+   ],
    "published": "2026-10-03T10:38+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "nc1odezfazqtqwdza05sbgnmu01zwk1jwunprldiczjzbl9jt0nomk1yuzlsdxfmwxrar09yq3g-oc-5",
@@ -463,8 +567,11 @@
    "lang": "en",
    "category": "mon",
    "importance": 3,
+   "tags": [
+    "steinmeier-weimar"
+   ],
    "published": "2026-10-03T10:35+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "vovk4n0zwz1jtvlc1lty2q3bmvkhyegfmd2jgutu2t1eycmlnwxnhu212etbuzmz0wg9fvunndw-oc-5",
@@ -476,8 +583,11 @@
    "lang": "en",
    "category": "suissa",
    "importance": 5,
+   "tags": [
+    "parmelin-relleu"
+   ],
    "published": "2026-10-03T09:58+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "https-www-theverge-com-tech-1004295-apple-limit-mac-disk-access-ai-agents",
@@ -489,8 +599,11 @@
    "lang": "en",
    "category": "tecnologia",
    "importance": 4,
+   "tags": [
+    "apple-acces-disc"
+   ],
    "published": "2026-10-02T20:08+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "olicy-2026-10-lyft-settles-landmark-driver-misclassification-lawsuit-for-272-5m",
@@ -502,8 +615,11 @@
    "lang": "en",
    "category": "tecnologia",
    "importance": 3,
+   "tags": [
+    "lyft-conductors"
+   ],
    "published": "2026-10-02T19:09+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "xctnsuel5n09imeq5y2nkyupfmgpqtzdzbxizbxlla3zsrvhzzjhet0j0avvkmdnltwhdwmztzw-oc-5",
@@ -515,8 +631,11 @@
    "lang": "en",
    "category": "ubs",
    "importance": 5,
+   "tags": [
+    "ubs-capital-seu"
+   ],
    "published": "2026-10-02T17:49+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "ser0dxz4c1bwmmfoswj0wv9uzdftr0nvtjbtb0zhtfp2tkrpmg0wvfk0wxhelut6mepismpkdek-oc-5",
@@ -528,8 +647,11 @@
    "lang": "en",
    "category": "ubs",
    "importance": 4,
+   "tags": [
+    "ubs-capital-seu"
+   ],
    "published": "2026-10-02T13:51+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "4qw1ntktobkhindy5vhrrzmuzy21ts0flvwztwe81y1jms1bcsw10sglycffuy3jxzg5xwknmdw-oc-5",
@@ -541,8 +663,11 @@
    "lang": "en",
    "category": "ubs",
    "importance": 5,
+   "tags": [
+    "ubs-capital-seu"
+   ],
    "published": "2026-10-02T07:00+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   },
   {
    "id": "mmtohj1mfvjdmtqvxjfn0luac1zs2czmxiyseq3ze5oz2dom3o2c1fstgnzevbjekltotrdmuvm-oc-5",
@@ -554,8 +679,11 @@
    "lang": "en",
    "category": "ubs",
    "importance": 4,
+   "tags": [
+    "ubs-capital-seu"
+   ],
    "published": "2026-10-02T07:00+00:00",
-   "added": "2026-10-04T06:44+00:00"
+   "added": "2026-10-04T06:50+00:00"
   }
  ]
 }

@@ -4,6 +4,18 @@ Pàgina petita, pensada per a l'iPhone, amb un giny que va rotant notícies i un
 **UBS · Suïssa · Catalunya · Espanya · Món · Tecnologia · Recerca**. Tot en català, amb titulars
 descriptius, un resum curt i l'enllaç a la font original.
 
+## Què pots fer a la pàgina
+
+- **Noves**: només les notícies que no has llegit. Les no llegides desapareixen al cap de **48 h**,
+  tret que les desis o en segueixis el tema. Un punt vermell marca les afegides des de la darrera visita.
+- **✓ Llegida**: la treu de la llista (amb «Desfer» durant uns segons). Queda a **Llegides** una setmana.
+- **🔖 Desar**: la conserva a **Desades** fins que la marquis com a llegida, encara que passin les 48 h.
+- **◎ Seguir el tema**: a **Seguiment** s'hi van afegint les notícies noves relacionades amb aquella
+  història (per etiqueta de tema o per coincidència de noms al titular) mentre en vagin sortint.
+  Un punt vermell a la pestanya avisa que hi ha novetats. «Deixar de seguir» quan ja no t'interessi.
+- Les marques es guarden al navegador del dispositiu (no pugen enlloc). Si obres la pàgina en un altre
+  aparell, allà comença de zero.
+
 ## Com funciona
 
 ```
@@ -20,7 +32,8 @@ fonts RSS  ──▶  news/build_news.py  ──▶  news/news.json  ──▶  
   i redacta per a cadascuna un titular descriptiu i neutre i un resum de 2-3 frases en català.
 - **Sense clau**: selecció per regles i traducció automàtica del titular i el resum originals
   (la pàgina ho indica amb «traducció automàtica»). Funciona, però la qualitat dels titulars és la de la font.
-- La GitHub Action `.github/workflows/noticies.yml` ho executa cada 3 hores i publica `news.json`.
+- La GitHub Action `.github/workflows/noticies.yml` ho executa **cada 3 hores** i publica `news.json`.
+  Cada notícia porta etiquetes de tema (`tags`) que permeten enllaçar les actualitzacions d'una mateixa història.
 - `index.html` només llegeix `news.json`: no cal servidor ni base de dades.
 
 ## Posada en marxa (un sol cop)

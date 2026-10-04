@@ -38,8 +38,8 @@ OUT = HERE / "news.json"
 USER_AGENT = "Mozilla/5.0 (compatible; noticies-ca/1.0; +https://github.com/gemmagf/investment)"
 MAX_AGE_CANDIDATES = timedelta(hours=36)   # finestra de notícies noves
 MAX_AGE_BY_CATEGORY = {"ubs": timedelta(hours=72)}  # poc volum: finestra més llarga
-KEEP_PUBLISHED = timedelta(hours=48)        # quant de temps es conserven al JSON
-MAX_TOTAL = 70
+KEEP_PUBLISHED = timedelta(hours=72)        # quant de temps es conserven al JSON
+MAX_TOTAL = 90
 
 # Categories (clau -> etiqueta en català i màxim de notícies noves per execució)
 CATEGORIES = {
@@ -286,6 +286,7 @@ Rebràs una llista de notícies candidates (titular, resum i font originals, en 
    - "summary": un resum factual de 2 o 3 frases (entre 200 i 380 caràcters) amb el context mínim per entendre la notícia: què, qui, quan, per què importa. No afegeixis informació que no sigui a la candidata; si el resum original és buit, basa't només en el titular i no inventis detalls.
    - "category": una de: ubs, suissa, catalunya, espanya, mon, tecnologia, recerca. Reassigna-la si cal (p. ex. una notícia del Govern suís trobada en una font mundial va a "suissa"; una notícia que menciona UBS va a "ubs").
    - "importance": enter de 1 (menor) a 5 (molt rellevant per a aquesta persona).
+   - "tags": d'1 a 3 etiquetes curtes en minúscules i sense espais (p. ex. "ubs-capital", "parmelin-relleu", "temporal-catalunya", "brasil-eleccions") que identifiquin el FET o la història de fons, no la categoria. Serveixen perquè la pàgina agrupi notícies de la mateixa història al llarg dels dies: si et passo una llista d'etiquetes recents, reutilitza exactament la mateixa etiqueta quan la notícia continuï aquella història.
 
 Escriu en català normatiu (no en castellà ni en anglès), amb noms propis i sigles tal com es coneixen. Retorna només el JSON demanat."""
 
@@ -302,8 +303,9 @@ OUTPUT_SCHEMA = {
                     "summary": {"type": "string"},
                     "category": {"type": "string", "enum": list(CATEGORIES)},
                     "importance": {"type": "integer", "minimum": 1, "maximum": 5},
+                    "tags": {"type": "array", "items": {"type": "string"}, "maxItems": 3},
                 },
-                "required": ["id", "title", "summary", "category", "importance"],
+                "required": ["id", "title", "summary", "category", "importance", "tags"],
                 "additionalProperties": False,
             },
         }
@@ -313,11 +315,20 @@ OUTPUT_SCHEMA = {
 }
 
 
-def select_with_claude(cands: list[dict]) -> list[dict] | None:
+def recent_tags(previous: list[dict]) -> list[str]:
+    seen: dict[str, int] = {}
+    for p in previous:
+        for t in p.get("tags") or []:
+            seen[t] = seen.get(t, 0) + 1
+    return sorted(seen, key=lambda t: -seen[t])[:40]
+
+
+def select_with_claude(cands: list[dict], previous: list[dict]) -> list[dict] | None:
     import anthropic
 
     client = anthropic.Anthropic()
     limits = ", ".join(f"{k}: màx. {v['max']}" for k, v in CATEGORIES.items())
+    tags = recent_tags(previous)
     lines = []
     for i, c in enumerate(cands):
         lines.append(
@@ -327,8 +338,9 @@ def select_with_claude(cands: list[dict]) -> list[dict] | None:
         )
     user = (
         f"Data i hora actual: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M')} UTC.\n"
-        f"Màxims per categoria: {limits}.\n\n"
-        "Candidates:\n\n" + "\n".join(lines)
+        f"Màxims per categoria: {limits}.\n"
+        + (f"Etiquetes recents (reutilitza-les si la història continua): {', '.join(tags)}\n" if tags else "")
+        + "\nCandidates:\n\n" + "\n".join(lines)
     )
     try:
         response = client.messages.create(
@@ -363,11 +375,21 @@ def select_with_claude(cands: list[dict]) -> list[dict] | None:
         seen.add(i)
         c = cands[i]
         out.append({**c, "title": row["title"].strip(), "summary": row["summary"].strip(),
-                    "category": row["category"], "importance": int(row["importance"])})
+                    "category": row["category"], "importance": int(row["importance"]),
+                    "tags": clean_tags(row.get("tags"))})
     print(f"Claude ha triat {len(out)} notícies "
           f"(tokens: {response.usage.input_tokens} entrada, {response.usage.output_tokens} sortida)",
           file=sys.stderr)
     return out
+
+
+def clean_tags(tags) -> list[str]:
+    out = []
+    for t in tags or []:
+        t = re.sub(r"[^a-z0-9àèéíòóúïüç]+", "-", str(t).lower()).strip("-")
+        if t and t not in out:
+            out.append(t)
+    return out[:3]
 
 
 # ---------------------------------------------------------------- reserva sense clau
@@ -410,19 +432,21 @@ def select_by_rules(cands: list[dict]) -> list[dict]:
             summ = summ[:377].rsplit(" ", 1)[0] + "…"
         c["summary"] = translate_ca(summ, c["lang"]) if summ else ""
         c["importance"] = 4 if c["category"] in ("ubs", "suissa", "catalunya") else 3
+        c["tags"] = []
         time.sleep(0.2)
     print(f"Selecció per regles: {len(out)} notícies (traducció automàtica)", file=sys.stderr)
     return out
 
 
 # ---------------------------------------------------------------- principal
-def dump_candidates(cands: list[dict], path: Path) -> None:
+def dump_candidates(cands: list[dict], path: Path, previous: list[dict]) -> None:
     """Desa les candidates perquè una sessió de Claude (sense clau d'API) les triï i redacti."""
     rows = [{k: (v.isoformat(timespec="minutes") if k == "published" else v) for k, v in c.items()} for c in cands]
     path.write_text(json.dumps({
         "instructions": SYSTEM_PROMPT,
         "limits": {k: v["max"] for k, v in CATEGORIES.items()},
         "output_schema": OUTPUT_SCHEMA,
+        "recent_tags": recent_tags(previous),
         "candidates": rows,
     }, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"Desades {len(rows)} candidates a {path}", file=sys.stderr)
@@ -440,7 +464,8 @@ def apply_selection(cands: list[dict], path: Path) -> list[dict]:
             continue
         seen.add(i)
         out.append({**cands[i], "title": str(row["title"]).strip(), "summary": str(row.get("summary", "")).strip(),
-                    "category": row["category"], "importance": max(1, min(5, int(row.get("importance", 3))))})
+                    "category": row["category"], "importance": max(1, min(5, int(row.get("importance", 3)))),
+                    "tags": clean_tags(row.get("tags"))})
     print(f"Selecció aplicada: {len(out)} notícies", file=sys.stderr)
     return out
 
@@ -464,11 +489,11 @@ def main() -> int:
     else:
         cands = collect_candidates(previous)
         if args.candidates:
-            dump_candidates(cands, args.candidates)
+            dump_candidates(cands, args.candidates, previous)
             return 0
         chosen = None
         if cands and os.environ.get("ANTHROPIC_API_KEY"):
-            chosen = select_with_claude(cands)
+            chosen = select_with_claude(cands, previous)
             mode = "claude"
         if chosen is None:
             chosen = select_by_rules(cands) if cands else []
@@ -487,6 +512,7 @@ def main() -> int:
             "lang": c["lang"],
             "category": c["category"],
             "importance": c["importance"],
+            "tags": c.get("tags") or [],
             "published": c["published"].isoformat(timespec="minutes"),
             "added": now.isoformat(timespec="minutes"),
         })
