@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Notícies al dia</title>
+<meta name="description" content="Recull de notícies objectives en català: UBS, Suïssa, Catalunya, Espanya, món, tecnologia i recerca.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Notícies">
+<meta name="theme-color" content="#f4f6f8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1317" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+/* Disposició: una columna de lectura (màx. 680px); a dalt el giny rotatiu, a sota la llista per categories. */
+:root {
+  --bg: #f4f6f8;        /* fons: gris fred molt clar */
+  --surface: #ffffff;   /* targetes */
+  --surface-2: #e9edf1; /* xips, fons secundaris */
+  --fg: #16202a;        /* text principal */
+  --muted: #5d6b79;     /* text secundari */
+  --line: #d6dde4;      /* vores */
+  --accent: #0e6b74;    /* petroli: enllaços, xip actiu, barra de progrés */
+  --accent-fg: #ffffff;
+  --widget: #16202a;    /* fons del giny (fosc sempre, com un giny d'iOS) */
+  --widget-fg: #f6f8fa;
+  --widget-muted: #a9b4c0;
+  --shadow: 0 10px 30px rgba(22, 32, 42, .12);
+  --font-ui: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-head: "Newsreader", Georgia, "Times New Roman", serif;
+  --radius: 22px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1317; --surface: #171c22; --surface-2: #222933; --fg: #e8edf2; --muted: #93a0ad;
+    --line: #2b3440; --accent: #4fb7bf; --accent-fg: #0b1a1c; --widget: #1c2430; --widget-fg: #f3f6f9;
+    --widget-muted: #a5b1be; --shadow: 0 10px 30px rgba(0, 0, 0, .45); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1317; --surface: #171c22; --surface-2: #222933; --fg: #e8edf2; --muted: #93a0ad;
+  --line: #2b3440; --accent: #4fb7bf; --accent-fg: #0b1a1c; --widget: #1c2430; --widget-fg: #f3f6f9;
+  --widget-muted: #a5b1be; --shadow: 0 10px 30px rgba(0, 0, 0, .45); color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { height: 100%; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; min-height: 100%; background: var(--bg); color: var(--fg);
+  font: 15px/1.45 var(--font-ui);
+  padding: env(safe-area-inset-top, 0px) 16px calc(24px + env(safe-area-inset-bottom, 0px));
+}
+[hidden] { display: none !important; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+.wrap { max-width: 680px; margin: 0 auto; display: grid; gap: 18px; padding-block: 14px 0; }
+
+/* Capçalera */
+.top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.top h1 { font: 600 28px/1.1 var(--font-head); margin: 0; letter-spacing: -.01em; }
+.top .meta { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+
+/* Giny rotatiu */
+.widget {
+  position: relative; background: var(--widget); color: var(--widget-fg); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 18px 18px 16px; min-height: 196px; display: grid; gap: 10px;
+  align-content: start; overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-select: none;
+}
+.widget .eyebrow { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--widget-muted); font-weight: 600; }
+.widget .eyebrow .cat { display: inline-flex; align-items: center; gap: 6px; }
+.widget .eyebrow .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c, #9fb3c8); }
+.widget .headline {
+  font: 500 24px/1.22 var(--font-head); margin: 0; text-wrap: balance; letter-spacing: -.005em;
+  text-align: left; width: 100%; color: inherit;
+}
+.widget .headline:hover { text-decoration: underline; text-decoration-color: var(--widget-muted); text-underline-offset: 3px; }
+.widget .src { font-size: 13px; color: var(--widget-muted); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.widget .detail { font-size: 15px; line-height: 1.5; color: var(--widget-fg); display: grid; gap: 10px; padding-top: 4px; border-top: 1px solid rgba(255,255,255,.14); margin-top: 2px; }
+.widget .detail a { color: #9fdbe0; font-weight: 600; text-decoration: none; }
+.widget .detail a:hover { text-decoration: underline; }
+.widget .nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 4px; }
+.widget .dots { display: flex; gap: 5px; flex: 1; }
+.widget .dots span { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,.22); overflow: hidden; position: relative; }
+.widget .dots span.done { background: rgba(255,255,255,.55); }
+.widget .dots span.on::after {
+  content: ""; position: absolute; inset: 0; background: #9fdbe0; transform-origin: left;
+  transform: scaleX(0); animation: fill var(--dur, 8s) linear forwards;
+}
+.widget.paused .dots span.on::after { animation-play-state: paused; }
+@keyframes fill { to { transform: scaleX(1); } }
+.widget .arrows { display: flex; gap: 4px; }
+.widget .arrows button { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,.1); color: var(--widget-fg); display: grid; place-items: center; font-size: 16px; }
+.widget .arrows button:hover { background: rgba(255,255,255,.2); }
+.widget.empty { place-items: center; color: var(--widget-muted); text-align: center; }
+
+/* Filtres */
+.chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex: 0 0 auto; display: inline-flex; align-items: center; gap: 7px; padding: 7px 13px; border-radius: 999px;
+  background: var(--surface-2); color: var(--fg); font-size: 13px; font-weight: 500; white-space: nowrap;
+  border: 1px solid transparent;
+}
+.chip .n { color: var(--muted); font-variant-numeric: tabular-nums; font-weight: 400; }
+.chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c, var(--muted)); }
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); }
+.chip[aria-pressed="true"] .n { color: inherit; opacity: .8; }
+.chip[aria-pressed="true"] .dot { background: var(--accent-fg); }
+
+/* Llista */
+.list { display: grid; gap: 8px; }
+.day { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding: 10px 2px 2px; }
+.item { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+.item summary { list-style: none; display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; padding: 12px 14px; cursor: pointer; }
+.item summary::-webkit-details-marker { display: none; }
+.item .t { font-weight: 500; font-size: 15.5px; line-height: 1.35; grid-column: 1; }
+.item .m { grid-column: 1; color: var(--muted); font-size: 12.5px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.item .m .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c, var(--muted)); }
+.item .chev { grid-column: 2; grid-row: 1 / span 2; align-self: center; color: var(--muted); transition: transform .2s; }
+.item[open] .chev { transform: rotate(180deg); }
+.item .body { padding: 0 14px 14px; display: grid; gap: 10px; color: var(--fg); font-size: 15px; line-height: 1.5; }
+.item .body .orig { color: var(--muted); font-size: 13px; }
+.item .body a.go { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; text-decoration: none; }
+.item .body a.go:hover { text-decoration: underline; }
+.hint { color: var(--muted); font-size: 12.5px; text-align: center; padding-top: 8px; line-height: 1.5; }
+.status { color: var(--muted); font-size: 14px; text-align: center; padding: 24px 0; }
+
+@media (min-width: 560px) {
+  .widget { padding: 22px 24px 18px; min-height: 220px; }
+  .widget .headline { font-size: 29px; }
+  .top h1 { font-size: 32px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .widget .dots span.on::after { animation: none; transform: scaleX(1); }
+  .item .chev { transition: none; }
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="top">
+    <h1>Notícies</h1>
+    <div class="meta" id="meta">Carregant…</div>
+  </header>
+
+  <section class="widget" id="widget" aria-roledescription="carrusel" aria-label="Notícies destacades">
+    <div class="status">Carregant notícies…</div>
+  </section>
+
+  <nav class="chips" id="chips" aria-label="Categories"></nav>
+
+  <section class="list" id="list"></section>
+
+  <p class="hint" id="hint" hidden>A l’iPhone: Compartir → <b>Afegir a la pantalla d’inici</b> per tenir-ho com una app. Toca un titular per veure’n el resum i la font.</p>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var CAT_COLORS = { ubs: '#e4584f', suissa: '#d8413c', catalunya: '#f2b42b', espanya: '#e0a21e', mon: '#4f8ad8', tecnologia: '#9c7bde', recerca: '#3bb273' };
+  var CAT_ORDER = ['ubs', 'suissa', 'catalunya', 'espanya', 'mon', 'tecnologia', 'recerca'];
+  var ROTATE_MS = 8000;
+
+  var $ = function (id) { return document.getElementById(id); };
+  var widgetEl = $('widget'), chipsEl = $('chips'), listEl = $('list'), metaEl = $('meta');
+
+  var data = null, items = [], labels = {}, filter = 'tot', featured = [], idx = 0, timer = null, detailOpen = false, paused = false;
+
+  try { filter = localStorage.getItem('noticies.filter') || 'tot'; } catch (e) {}
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  function timeAgo(iso) {
+    var d = new Date(iso); if (isNaN(d)) return '';
+    var mins = Math.round((Date.now() - d.getTime()) / 60000);
+    if (mins < 1) return 'ara mateix';
+    if (mins < 60) return 'fa ' + mins + ' min';
+    var h = Math.round(mins / 60);
+    if (h < 24) return 'fa ' + h + ' h';
+    var days = Math.round(h / 24);
+    return days === 1 ? 'ahir' : 'fa ' + days + ' dies';
+  }
+  function dayLabel(iso) {
+    var d = new Date(iso), now = new Date();
+    var sameDay = function (a, b) { return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); };
+    if (sameDay(d, now)) return 'Avui';
+    var y = new Date(now); y.setDate(now.getDate() - 1);
+    if (sameDay(d, y)) return 'Ahir';
+    return d.toLocaleDateString('ca-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+  }
+  function fmtUpdated(iso) {
+    var d = new Date(iso); if (isNaN(d)) return '';
+    return 'Actualitzat ' + d.toLocaleDateString('ca-ES', { day: 'numeric', month: 'short' }) + ', ' + d.toLocaleTimeString('ca-ES', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  // ---------- Giny rotatiu ----------
+  function pickFeatured() {
+    var pool = items.slice();
+    pool.sort(function (a, b) { return (b.importance - a.importance) || (new Date(b.published) - new Date(a.published)); });
+    // Una notícia per categoria primer, perquè el giny vagi variant de tema.
+    var seen = {}, first = [], rest = [];
+    pool.forEach(function (it) { if (!seen[it.category]) { seen[it.category] = 1; first.push(it); } else rest.push(it); });
+    return first.concat(rest).slice(0, 8);
+  }
+
+  function renderWidget() {
+    if (!featured.length) {
+      widgetEl.className = 'widget empty';
+      widgetEl.innerHTML = '<div>Encara no hi ha notícies. Torna-ho a mirar més tard.</div>';
+      return;
+    }
+    var it = featured[idx], c = CAT_COLORS[it.category] || '#9fb3c8';
+    var dots = featured.map(function (_, i) { return '<span class="' + (i < idx ? 'done' : i === idx ? 'on' : '') + '"></span>'; }).join('');
+    widgetEl.className = 'widget' + (paused || detailOpen ? ' paused' : '');
+    widgetEl.style.setProperty('--dur', ROTATE_MS + 'ms');
+    widgetEl.innerHTML =
+      '<div class="eyebrow"><span class="cat" style="--c:' + c + '"><span class="dot"></span>' + esc(labels[it.category] || it.category) + '</span><span>' + esc(timeAgo(it.published)) + '</span></div>' +
+      '<button class="headline" id="wHead" aria-expanded="' + detailOpen + '">' + esc(it.title) + '</button>' +
+      '<div class="src">' + esc(it.source) + (detailOpen ? '' : ' · <span>toca per veure el resum</span>') + '</div>' +
+      (detailOpen ? '<div class="detail"><div>' + esc(it.summary || 'Sense resum disponible; obre la font per llegir-ne més.') + '</div><a href="' + esc(it.url) + '" target="_blank" rel="noopener">Obre la font ↗</a></div>' : '') +
+      '<div class="nav"><div class="dots">' + dots + '</div><div class="arrows"><button id="wPrev" aria-label="Anterior">‹</button><button id="wNext" aria-label="Següent">›</button></div></div>';
+    $('wHead').onclick = function () { detailOpen = !detailOpen; renderWidget(); schedule(); };
+    $('wPrev').onclick = function () { go(-1); };
+    $('wNext').onclick = function () { go(1); };
+  }
+  function go(step) { idx = (idx + step + featured.length) % featured.length; detailOpen = false; renderWidget(); schedule(); }
+  function schedule() {
+    clearTimeout(timer);
+    if (featured.length < 2 || detailOpen || paused || document.hidden) return;
+    timer = setTimeout(function () { go(1); }, ROTATE_MS);
+  }
+
+  widgetEl.addEventListener('mouseenter', function () { paused = true; renderWidget(); schedule(); });
+  widgetEl.addEventListener('mouseleave', function () { paused = false; renderWidget(); schedule(); });
+  var tx = null;
+  widgetEl.addEventListener('touchstart', function (e) { tx = e.touches[0].clientX; }, { passive: true });
+  widgetEl.addEventListener('touchend', function (e) {
+    if (tx == null) return; var dx = e.changedTouches[0].clientX - tx; tx = null;
+    if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
+  });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) { renderWidget(); } schedule(); });
+
+  // ---------- Filtres i llista ----------
+  function renderChips() {
+    var counts = {}; items.forEach(function (it) { counts[it.category] = (counts[it.category] || 0) + 1; });
+    var cats = ['tot'].concat(CAT_ORDER.filter(function (c) { return counts[c]; }));
+    if (filter !== 'tot' && !counts[filter]) filter = 'tot';
+    chipsEl.innerHTML = cats.map(function (c) {
+      var n = c === 'tot' ? items.length : counts[c];
+      return '<button class="chip" data-cat="' + c + '" aria-pressed="' + (filter === c) + '" style="--c:' + (CAT_COLORS[c] || 'var(--muted)') + '">' +
+        (c === 'tot' ? '' : '<span class="dot"></span>') + esc(c === 'tot' ? 'Tot' : labels[c] || c) + ' <span class="n">' + n + '</span></button>';
+    }).join('');
+    Array.prototype.forEach.call(chipsEl.children, function (b) {
+      b.onclick = function () { filter = b.getAttribute('data-cat'); try { localStorage.setItem('noticies.filter', filter); } catch (e) {} renderChips(); renderList(); };
+    });
+  }
+
+  function renderList() {
+    var rows = items.filter(function (it) { return filter === 'tot' || it.category === filter; });
+    rows.sort(function (a, b) { return new Date(b.published) - new Date(a.published); });
+    if (!rows.length) { listEl.innerHTML = '<div class="status">No hi ha notícies en aquesta categoria.</div>'; return; }
+    var html = '', lastDay = null;
+    rows.forEach(function (it) {
+      var day = dayLabel(it.published);
+      if (day !== lastDay) { html += '<div class="day">' + esc(day) + '</div>'; lastDay = day; }
+      var c = CAT_COLORS[it.category] || 'var(--muted)';
+      var showOrig = it.title_orig && it.lang !== 'ca' && it.title_orig !== it.title;
+      html += '<details class="item" id="it-' + esc(it.id) + '">' +
+        '<summary><div class="t">' + esc(it.title) + '</div>' +
+        '<div class="m" style="--c:' + c + '"><span class="dot"></span>' + esc(labels[it.category] || it.category) + ' · ' + esc(it.source) + ' · ' + esc(timeAgo(it.published)) + '</div>' +
+        '<span class="chev" aria-hidden="true">⌄</span></summary>' +
+        '<div class="body"><div>' + esc(it.summary || 'Sense resum disponible; obre la font per llegir-ne més.') + '</div>' +
+        (showOrig ? '<div class="orig">Titular original: ' + esc(it.title_orig) + '</div>' : '') +
+        '<a class="go" href="' + esc(it.url) + '" target="_blank" rel="noopener">Obre la font ↗</a></div></details>';
+    });
+    listEl.innerHTML = html;
+  }
+
+  // ---------- Càrrega ----------
+  function load() {
+    fetch('news.json?t=' + Math.floor(Date.now() / 300000), { cache: 'no-cache' })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (d) {
+        data = d; items = (d.items || []).slice(); labels = d.categories || {};
+        metaEl.textContent = fmtUpdated(d.generated_at) + (d.mode === 'traduccio' ? ' · traducció automàtica' : '');
+        featured = pickFeatured(); idx = 0; detailOpen = false;
+        renderWidget(); renderChips(); renderList(); schedule();
+        $('hint').hidden = false;
+      })
+      .catch(function (err) {
+        metaEl.textContent = '';
+        widgetEl.className = 'widget empty';
+        widgetEl.innerHTML = '<div>No s’han pogut carregar les notícies (' + esc(err.message) + '). Comprova que news.json existeixi al costat d’aquesta pàgina.</div>';
+      });
+  }
+  load();
+  // Torna a carregar cada 30 minuts si la pàgina queda oberta.
+  setInterval(function () { if (!document.hidden) load(); }, 30 * 60000);
+})();
+</script>
+</body>
+</html>

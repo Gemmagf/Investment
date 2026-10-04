@@ -1,0 +1,47 @@
+name: Actualitza notícies
+
+on:
+  schedule:
+    # Cada 3 hores (UTC). Prou freqüent per veure les coses "quan passen".
+    - cron: "17 */3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: noticies
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: news/requirements.txt
+
+      - run: pip install -r news/requirements.txt
+
+      - name: Genera news/news.json
+        env:
+          # Opcional: amb la clau, Claude redacta titulars descriptius i resums en català.
+          # Sense clau, es tradueixen automàticament els titulars i resums originals.
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python news/build_news.py
+
+      - name: Publica els canvis
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add news/news.json
+          if git diff --cached --quiet; then
+            echo "Sense canvis"
+          else
+            git commit -m "Actualitza notícies ($(date -u +'%Y-%m-%d %H:%M UTC'))"
+            git push
+          fi

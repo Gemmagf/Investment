@@ -1,0 +1,12 @@
+{
+  "name": "Notícies al dia",
+  "short_name": "Notícies",
+  "description": "Recull de notícies objectives en català: UBS, Suïssa, Catalunya, Espanya, món, tecnologia i recerca.",
+  "lang": "ca",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6f8",
+  "theme_color": "#16202a",
+  "icons": [{ "src": "icon.png", "sizes": "180x180", "type": "image/png" }]
+}
