@@ -11,7 +11,9 @@ Flux:
      Si no: selecció per regles i traducció automàtica (Google Translate gratuït).
   4. Fusiona amb el news.json anterior (es conserven 48 h) i el desa.
 
-Ús:  python news/build_news.py            (des de l'arrel del repositori)
+Ús:  python news/build_news.py                      (des de l'arrel del repositori)
+     python news/build_news.py --candidates cand.json   només recull candidates (per a una sessió de Claude)
+     python news/build_news.py --selection sel.json     escriu news.json a partir d'una selecció ja redactada
 """
 from __future__ import annotations
 
@@ -414,17 +416,63 @@ def select_by_rules(cands: list[dict]) -> list[dict]:
 
 
 # ---------------------------------------------------------------- principal
-def main() -> int:
-    previous = load_previous()
-    cands = collect_candidates(previous)
+def dump_candidates(cands: list[dict], path: Path) -> None:
+    """Desa les candidates perquè una sessió de Claude (sense clau d'API) les triï i redacti."""
+    rows = [{k: (v.isoformat(timespec="minutes") if k == "published" else v) for k, v in c.items()} for c in cands]
+    path.write_text(json.dumps({
+        "instructions": SYSTEM_PROMPT,
+        "limits": {k: v["max"] for k, v in CATEGORIES.items()},
+        "output_schema": OUTPUT_SCHEMA,
+        "candidates": rows,
+    }, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"Desades {len(rows)} candidates a {path}", file=sys.stderr)
 
-    chosen = None
-    if cands and os.environ.get("ANTHROPIC_API_KEY"):
-        chosen = select_with_claude(cands)
-        mode = "claude"
-    if chosen is None:
-        chosen = select_by_rules(cands) if cands else []
-        mode = "traduccio"
+
+def apply_selection(cands: list[dict], path: Path) -> list[dict]:
+    """Llegeix una selecció amb el format d'OUTPUT_SCHEMA (id, title, summary, category, importance)."""
+    data = json.loads(path.read_text(encoding="utf-8"))
+    out, seen = [], set()
+    for row in data.get("items", []):
+        i = row.get("id")
+        if not isinstance(i, int) or not (0 <= i < len(cands)) or i in seen:
+            continue
+        if row.get("category") not in CATEGORIES:
+            continue
+        seen.add(i)
+        out.append({**cands[i], "title": str(row["title"]).strip(), "summary": str(row.get("summary", "")).strip(),
+                    "category": row["category"], "importance": max(1, min(5, int(row.get("importance", 3))))})
+    print(f"Selecció aplicada: {len(out)} notícies", file=sys.stderr)
+    return out
+
+
+def main() -> int:
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--candidates", type=Path, help="desa les candidates en aquest fitxer i surt")
+    ap.add_argument("--selection", type=Path, help="selecció redactada (JSON) per generar news.json")
+    args = ap.parse_args()
+
+    previous = load_previous()
+    if args.selection:
+        cand_file = args.selection.with_name("candidates.json")
+        if not cand_file.exists():
+            print(f"Cal {cand_file} (generat amb --candidates)", file=sys.stderr)
+            return 1
+        raw = json.loads(cand_file.read_text(encoding="utf-8"))["candidates"]
+        cands = [{**c, "published": datetime.fromisoformat(c["published"])} for c in raw]
+        chosen, mode = apply_selection(cands, args.selection), "claude"
+    else:
+        cands = collect_candidates(previous)
+        if args.candidates:
+            dump_candidates(cands, args.candidates)
+            return 0
+        chosen = None
+        if cands and os.environ.get("ANTHROPIC_API_KEY"):
+            chosen = select_with_claude(cands)
+            mode = "claude"
+        if chosen is None:
+            chosen = select_by_rules(cands) if cands else []
+            mode = "traduccio"
 
     now = datetime.now(timezone.utc)
     new_items = []
