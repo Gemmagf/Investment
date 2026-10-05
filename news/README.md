@@ -42,7 +42,7 @@ fonts RSS  ──▶  news/build_news.py  ──▶  news/news.json  ──▶  
    nom `ANTHROPIC_API_KEY`. Sense secret la pàgina funciona igualment en mode traducció.
 2. **GitHub Pages**: *Settings → Pages → Build and deployment → Source: Deploy from a branch*,
    branca `main`, carpeta `/ (root)`. Al cap d'un minut la pàgina queda a
-   `https://gemmagf.github.io/investment/news/`.
+   `https://gemmagf.github.io/Investment/news/`.
 3. **Primera execució**: *Actions → Actualitza notícies → Run workflow* (o espera la propera hora programada).
 4. **A l'iPhone**: obre l'adreça a Safari, *Compartir → Afegir a la pantalla d'inici*. S'obre com una app.
 
