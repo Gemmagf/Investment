@@ -137,6 +137,8 @@ def strip_html(s: str | None) -> str:
         return ""
     s = re.sub(r"<[^>]+>", " ", s)
     s = html.unescape(s)
+    # Apòstrofs que alguns feeds serveixen trencats ("d?un", "l?home").
+    s = re.sub(r"\b([dlsmntDLSMNT])\?(?=[aeiouhàèéíòóúüïAEIOUHÀÈÉÍÒÓÚ])", "\\1’", s)
     return re.sub(r"\s+", " ", s).strip()
 
 
@@ -394,19 +396,32 @@ def clean_tags(tags) -> list[str]:
 
 # ---------------------------------------------------------------- reserva sense clau
 def translate_ca(text: str, src: str) -> str:
+    """Traducció gratuïta amb dos serveis de Google i reintents: el servidor de GitHub
+    comparteix IP amb molta gent i de tant en tant rep un 429."""
     if not text or src == "ca":
         return text
-    try:
-        r = requests.get(
-            "https://translate.googleapis.com/translate_a/single",
-            params={"client": "gtx", "sl": src, "tl": "ca", "dt": "t", "q": text},
-            timeout=15, headers={"User-Agent": USER_AGENT},
-        )
-        r.raise_for_status()
-        return "".join(seg[0] for seg in r.json()[0] if seg and seg[0]).strip() or text
-    except Exception as ex:
-        print(f"  ! traducció: {ex}", file=sys.stderr)
-        return text
+    attempts = [
+        ("https://translate.googleapis.com/translate_a/single",
+         {"client": "gtx", "sl": src, "tl": "ca", "dt": "t", "q": text},
+         lambda j: "".join(seg[0] for seg in j[0] if seg and seg[0])),
+        ("https://clients5.google.com/translate_a/t",
+         {"client": "dict-chrome-ex", "sl": src, "tl": "ca", "q": text},
+         lambda j: j[0] if isinstance(j[0], str) else j[0][0]),
+    ]
+    for i in range(4):
+        url, params, parse = attempts[i % 2]
+        try:
+            r = requests.get(url, params=params, timeout=15, headers={"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"})
+            if r.status_code == 429:
+                raise RuntimeError("429")
+            r.raise_for_status()
+            out = parse(r.json()).strip()
+            if out:
+                return out
+        except Exception as ex:
+            print(f"  ! traducció (intent {i + 1}): {ex}", file=sys.stderr)
+        time.sleep(1.5 * (i + 1))
+    return text
 
 
 def select_by_rules(cands: list[dict]) -> list[dict]:
@@ -433,7 +448,9 @@ def select_by_rules(cands: list[dict]) -> list[dict]:
         c["summary"] = translate_ca(summ, c["lang"]) if summ else ""
         c["importance"] = 4 if c["category"] in ("ubs", "suissa", "catalunya") else 3
         c["tags"] = []
-        time.sleep(0.2)
+        if c["title"] == c["title_orig"] and c["lang"] != "ca":
+            c["untranslated"] = True
+        time.sleep(0.4)
     print(f"Selecció per regles: {len(out)} notícies (traducció automàtica)", file=sys.stderr)
     return out
 
@@ -513,6 +530,7 @@ def main() -> int:
             "category": c["category"],
             "importance": c["importance"],
             "tags": c.get("tags") or [],
+            "untranslated": bool(c.get("untranslated")),
             "published": c["published"].isoformat(timespec="minutes"),
             "added": now.isoformat(timespec="minutes"),
         })
@@ -524,6 +542,11 @@ def main() -> int:
         except Exception:
             continue
         if now - pub <= KEEP_PUBLISHED and p.get("category") in CATEGORIES:
+            if p.get("lang") != "ca" and p.get("title") == p.get("title_orig"):
+                p["title"] = translate_ca(p["title_orig"], p["lang"])
+                if p.get("summary") and p.get("summary_orig"):
+                    p["summary"] = translate_ca(p["summary_orig"], p["lang"])
+                p["untranslated"] = p["title"] == p["title_orig"]
             kept.append(p)
 
     items = new_items + kept
